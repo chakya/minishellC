@@ -1,2 +1,5 @@
 cc src/*.c src/*/*.c lib/libft/libft.a -lreadline -g
 echo test || cat -e
+echo 'test hello';cat txt
+echo "    test   spaces"
+     echo "  iregular spaces"

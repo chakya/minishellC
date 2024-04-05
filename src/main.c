@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 09:06:01 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/05 01:06:10 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/05 14:52:26 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,19 @@ void	init_mnsh(char **envp, t_minishell **mnsh)
 // 	return (0);
 // }
 
+int printf_tokens(t_dls *tokens)
+{
+	t_dls *tmp;
+
+	tmp = tokens;
+	while (tmp)
+	{
+		printf("%s\n", tmp->content);
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
 int	main(void)
 {
 	char 	*input;
@@ -61,11 +74,12 @@ int	main(void)
 	// setup signal
 	while (!exit_sig)
 	{
-		// input = readline("$ ");
-		input = "echo test || cat -e";
+		input = readline("$ ");
+		// input = "echo '  test  i'";
 		if (!input)
 			return (1);
 		tokens = parse_token(input);
+		printf_tokens(tokens);
 		// scode = exec(syntax);
 	}
 	// free stuffs
