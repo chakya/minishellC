@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 09:06:01 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/05 14:52:26 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/05 16:10:05 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int printf_tokens(t_dls *tokens)
 	return (0);
 }
 
-int	main(void)
+int	main(int ac, char **av, char **envp)
 {
 	char 	*input;
 	t_dls *tokens;
@@ -79,10 +79,10 @@ int	main(void)
 		if (!input)
 			return (1);
 		tokens = parse_token(input);
-		printf_tokens(tokens);
+		// printf_tokens(tokens);
+		execute(tokens, envp);
 		// scode = exec(syntax);
 	}
 	// free stuffs
-
 	return (0);
 }

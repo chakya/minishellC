@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/05 15:24:34 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/05 16:47:24 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,36 +154,26 @@ t_dls	*parse_token(char *input)
 	return (tokens);
 }
 
-int execute(t_dls *tokens)
+int run_builtin(char **av, char **envp)
 {
-	t_dls *tmp;
+	int exit_status;
 
-	tmp = tokens;
-	while (tmp)
-	{
-		printf("%s\n", tmp->content);
-		tmp = tmp->next;
-	}
-	return (0);
+	if (!ft_strncmp(av[0], "echo", 5))
+		exit_status = echo(av);
+	// else if (!ft_strncmp(av[0], "cd"))
+	// 	cd(av[1]);
+	else if (!ft_strncmp(av[0], "env", 4))
+		exit_status = env(av, envp);
+	else if (!ft_strncmp(av[0], "pwd", 4))
+		pwd();
+	// else if (!ft_strncmp(av[0], "export"))
+	// 	export(av);
+	// else if (!ft_strncmp(av[0], "unset"))
+	// 	unset(av);
+	return (exit_status);
 }
 
-int run_builtin(char **av)
-{
-	if (!ft_strcmp(av[0], "echo"))
-		ft_echo(av);
-	else if (!ft_strcmp(av[0], "cd"))
-		ft_cd(av[1]);
-	else if (!ft_strcmp(av[0], "env"))
-		ft_env();
-	else if (!ft_strcmp(av[0], "pwd"))
-		ft_pwd();
-	else if (!ft_strcmp(av[0], "export"))
-		ft_export(av);
-	else if (!ft_strcmp(av[0], "unset"))
-		ft_unset(av);
-}
-
-int process_av(t_dls *tokens)
+char **parse_to_arg(t_dls *tokens)
 {
 	t_dls	*tmp;
 	char	**av;
@@ -211,14 +201,64 @@ int process_av(t_dls *tokens)
 		}
 		tmp = tmp->next;
 	}
-	av[i] = '\0';
+	av[i] = NULL;
 	return (av);
 }
 
-int	execute(t_dls *tokens)
+char *get_dollar(char *str, char **envp)
+{
+	int		i;
+	int		j;
+	char	*var;
+	int		varlen;
+
+	j = 1;
+	while (str[j] && !ft_isspace(str[j]) && !is_delim(&str[j]))
+		j++;
+	var = ft_strndup(str + 1, j - 1);
+	varlen = ft_strlen(var);
+	i = 0;
+	while (envp[i])
+	{
+		if (!ft_strncmp(envp[i], var, varlen))
+		{
+			free(var);
+			return (ft_strdup(envp[i] + varlen + 1));
+		}
+		i++;
+	}
+	free(var);
+	return (str);
+}
+
+char **process_av(t_dls *tokens, char **envp)
+{
+	t_dls	*tmp;
+	char	**av;
+	char	*dollar_var;
+	int		i;
+
+	tmp = tokens;
+	i = 0;
+	while (tmp)
+	{
+		if (tmp->content[0] == '$')
+		{
+			dollar_var = get_dollar(tmp->content, envp);
+			free(tmp->content);
+			tmp->content = dollar_var;
+		}
+		//else if for * wild card
+		tmp = tmp->next;
+	}
+	av = parse_to_arg(tokens);
+	return (av);
+}
+
+int	execute(t_dls *tokens, char **envp)
 {
 	char	**av;
 
-	av = process_av(tokens);
-	run_builtin(av);
+	av = process_av(tokens, envp);
+	return run_builtin(av, envp);
 }
