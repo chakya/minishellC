@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mnsh_pipe.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <dphang@student.42.fr>              +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 14:01:39 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/03 23:35:00 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/04 23:57:21 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@
 			  of the next command via a pipe
 */
 
-int	main(int ac, char **av, char **envp)
-{
-	pid_t	pid;
+// int	main(int ac, char **av, char **envp)
+// {
+// 	pid_t	pid;
 
-	pid = getpid();
+// 	pid = getpid();
 	
-	return (0);
-}
+// 	return (0);
+// }

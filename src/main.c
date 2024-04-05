@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 09:06:01 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/04 15:02:13 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/05 01:06:10 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,37 @@ void	init_mnsh(char **envp, t_minishell **mnsh)
 	(*mnsh)->exit_status = 0;
 }
 
-int	main(int ac, char **av, char **envp)
-{
-	(void)ac;
-	t_minishell *mnsh;
+// int	main(int ac, char **av, char **envp)
+// {
+// 	(void)ac;
+// 	t_minishell *mnsh;
 
-	init_mnsh(envp, &mnsh);
-	echo(av);
-	//pwd();
-	//env(av, mnsh->envp);
+// 	init_mnsh(envp, &mnsh);
+// 	echo(av);
+// 	//pwd();
+// 	//env(av, mnsh->envp);
+// 	return (0);
+// }
+
+int	main(void)
+{
+	char 	*input;
+	t_dls *tokens;
+	int		scode;
+	int		exit_sig;
+
+	exit_sig = 0;
+	// setup signal
+	while (!exit_sig)
+	{
+		// input = readline("$ ");
+		input = "echo test || cat -e";
+		if (!input)
+			return (1);
+		tokens = parse_token(input);
+		// scode = exec(syntax);
+	}
+	// free stuffs
+
 	return (0);
 }
