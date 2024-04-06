@@ -6,12 +6,16 @@
 /*   By: dphang <dphang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/04 13:12:02 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/05 09:52:14 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
+
+#ifndef PATH_MAX
+# define PATH_MAX 4096
+#endif
 
 #include "../lib/libft/libft.h"
 #include <dirent.h>
@@ -29,16 +33,29 @@
 #include <fcntl.h>
 #include <termios.h>
 
+typedef struct s_envp
+{
+    char            *content;
+    struct s_envp   *next;
+}                   t_envp;
 
 typedef struct	s_minishell
 {
-    char	**envp;
+    t_envp	*envp;
     int		exit_status;
 }			t_minishell;
 
 //	built-ins
+//	builtins_utils
+int	ft_strcmp(const char *s1, const char *s2);
+int	is_redir(char *str);
+//  cd
+int	cd(char **cmd, t_minishell **mnsh);
+//	echo
 int echo(char **cmd);
-int	env(char **cmd, char **envp);
+//	env
+int	env(char **cmd, t_minishell *mnsh);
+//	pwd
 int	pwd(void);
 
 #endif
