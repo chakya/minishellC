@@ -25,7 +25,8 @@ SRCS = \
 		src/builtins/unset.c \
 		src/builtins/pwd.c \
 		src/builtins/builtins_utils.c \
-		src/excu/excu.c
+		src/excu/excu.c \
+		src/redir/get_path.c
 #		src/lst/dls.c \
 		src/parser/parsing.c \
 		src/parser/split.c \

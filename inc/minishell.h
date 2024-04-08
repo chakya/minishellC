@@ -66,6 +66,9 @@ int	unset(char **cmd, t_minishell **mnsh);
 //  =========================   execution   ===================================
 //  excu
 void    excu(char **cmd, t_minishell **mnsh);
+//  =========================   redirection   =================================
+//  get_path
+char	**get_path(t_minishell **mnsh);
 //  =========================   initialization   ==============================
 t_envp	*newenvp(char *var);
 void	init_mnsh(char **envp, t_minishell **mnsh);
