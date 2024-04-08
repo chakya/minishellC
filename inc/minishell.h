@@ -45,7 +45,7 @@ typedef struct	s_minishell
     int		exit_status;
 }			t_minishell;
 
-//	built-ins
+//	=========================   built-ins   ===================================
 //	builtins_utils
 int	ft_strcmp(const char *s1, const char *s2);
 int	is_redir(char *str);
@@ -55,7 +55,19 @@ int	cd(char **cmd, t_minishell **mnsh);
 int echo(char **cmd);
 //	env
 int	env(char **cmd, t_minishell *mnsh);
+//  exit
+int	mnsh_exit(t_minishell **mnsh);
+//  export
+int export(char **cmd, t_minishell **mnsh);
 //	pwd
 int	pwd(void);
+//  unset
+int	unset(char **cmd, t_minishell **mnsh);
+//  =========================   execution   ===================================
+//  excu
+void    excu(char **cmd, t_minishell **mnsh);
+//  =========================   initialization   ==============================
+t_envp	*newenvp(char *var);
+void	init_mnsh(char **envp, t_minishell **mnsh);
 
 #endif

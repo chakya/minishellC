@@ -12,8 +12,8 @@
 
 #include "../../inc/minishell.h"
 
-// int	exit(t_minishell **mnsh)
-// {
-// 	(*mnsh)->exit_status = 1;
-// 	return (0);
-// }
+int	mnsh_exit(t_minishell **mnsh)
+{
+	(*mnsh)->exit_status = 1;
+	return (0);
+}

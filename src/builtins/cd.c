@@ -12,21 +12,6 @@
 
 #include "../../inc/minishell.h"
 
-/*
-	Search and launch the right executable, based on the PATH variable or
-	using a relative or an absolute path.
-
-	Get the path of built-in shell commands:
-		echo with -n flag								DONE, req testing
-			-n : do not output the trailing newline
-		cd with only a relative or absolute path		WIP
-		pwd												DONE + TESTED
-		export											WIP
-		unset											WIP
-		env												DONE + TESTED
-		exit											WIP
-*/
-
 char	*ft_strpathdup(const char *path, const char *value)
 {
 	int		i;
@@ -54,7 +39,7 @@ char	*ft_strpathdup(const char *path, const char *value)
 	return (dup);
 }
 
-void	update_envp(t_minishell **mnsh)
+void	update_wd(t_minishell **mnsh)
 {
 	t_envp	*wd;
 	t_envp	*old_wd;
@@ -86,21 +71,18 @@ void	update_envp(t_minishell **mnsh)
 
 int	cd(char **cmd, t_minishell **mnsh)
 {
-	if (!cmd[1])
+	if (cmd[1] && cmd[2])
 	{
-		printf("cd: error: Please provide a relative or absolute path");
+		printf("cd: too many arguments\n");
 		return (1);
 	}
-	else if (cmd[2])
-	{
-		printf("cd: too many arguments");
-		return (1);
-	}
-	if (chdir(cmd[1]) != 0)
+	if (cmd[1] && chdir(cmd[1]) != 0)
 	{
 		printf("cd: %s: No such file or directory", cmd[1]);
 		return (1);
 	}
-	update_envp(mnsh);
+	else if (!cmd[1])
+		chdir(getenv("HOME"));
+	update_wd(mnsh);
 	return (0);
 }
