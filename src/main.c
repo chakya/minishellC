@@ -18,23 +18,24 @@ int	main(int ac, char **av, char **envp)
 	t_minishell *mnsh;
 
 	init_mnsh(envp, &mnsh);
-	//test
-	t_envp	*temp;
-	temp = mnsh->envp;
-	while (temp)
-	{
-		printf("%s\n", temp->content);
-		temp = temp->next;
-	}
-	//end test
+	// //test
+	// t_envp	*temp;
+	// temp = mnsh->envp;
+	// while (temp)
+	// {
+	// 	printf("%s\n", temp->content);
+	// 	temp = temp->next;
+	// }
+	// //end test
 	excu(av + 1, &mnsh);
-	//test
-	temp = mnsh->envp;
-	while (temp)
-	{
-		printf("%s\n", temp->content);
-		temp = temp->next;
-	}
-	//end test
+	// //test
+	// temp = mnsh->envp;
+	// while (temp)
+	// {
+	// 	printf("%s\n", temp->content);
+	// 	temp = temp->next;
+	// }
+	// //end test
+	free_all(&mnsh);
 	return (0);
 }

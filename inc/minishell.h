@@ -69,5 +69,8 @@ void    excu(char **cmd, t_minishell **mnsh);
 //  =========================   initialization   ==============================
 t_envp	*newenvp(char *var);
 void	init_mnsh(char **envp, t_minishell **mnsh);
+//  =========================   free   ========================================
+void	free_envp(t_envp **envp);
+void    free_all(t_minishell **mnsh);
 
 #endif

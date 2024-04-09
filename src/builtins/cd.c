@@ -22,9 +22,9 @@ char	*ft_strpathdup(const char *path, const char *value)
 	i = 0;
 	j = 0;
 	len = ft_strlen(path) + ft_strlen(value);
-	dup = (char *)malloc((len + 1) * sizeof(char));
+	dup = malloc((len + 1) * sizeof(char));
 	if (!dup)
-		return (((void *) 0));
+		return (NULL);
 	while (path[i])
 	{
 		dup[i] = path[i];
@@ -32,10 +32,10 @@ char	*ft_strpathdup(const char *path, const char *value)
 	}
 	while (value[j])
 	{
-		dup[i] = value[j++];
-		i++;
+		dup[i + j] = value[j];
+		j++;
 	}
-	dup[i] = '\0';
+	dup[i + j] = '\0';
 	return (dup);
 }
 
@@ -44,11 +44,12 @@ void	update_wd(t_minishell **mnsh)
 	t_envp	*wd;
 	t_envp	*old_wd;
 	t_envp	*temp;
+	char	*new_wd;
 
 	wd = NULL;
 	old_wd = NULL;
 	temp = (*mnsh)->envp;
-	while (!wd || !old_wd)
+	while (temp && (!wd || !old_wd))
 	{
 		if (ft_strncmp(temp->content, "PWD=", 4) == 0)
 			wd = temp;
@@ -56,17 +57,16 @@ void	update_wd(t_minishell **mnsh)
 			old_wd = temp;
 		temp = temp->next;
 	}
-	//test
-	printf("pwd: %s\noldpwd: %s\n", wd->content, old_wd->content);
 	if (wd && old_wd)
 	{
 		free(old_wd->content);
-		old_wd->content = ft_strpathdup("OLDPWD=", (wd->content + 4));
+		old_wd->content = ft_strpathdup("OLDPWD=", (wd->content + 5));
 		free(wd->content);
-		wd->content = ft_strpathdup("PWD=", getcwd(NULL, 0));
+		new_wd = (char *)malloc(PATH_MAX * sizeof(char));
+		getcwd(new_wd, PATH_MAX);
+		wd->content = ft_strpathdup("PWD=", new_wd);
+		free(new_wd);
 	}
-	//test
-	printf("pwd: %s\noldpwd: %s\n", wd->content, old_wd->content);
 }
 
 int	cd(char **cmd, t_minishell **mnsh)

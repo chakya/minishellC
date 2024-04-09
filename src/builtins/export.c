@@ -54,19 +54,54 @@ void	add_exp(char *envp, t_minishell **mnsh)
 	}
 }
 
+char	*enclose_val(char *envp)
+{
+	int		i;
+	int		j;
+	char	*res;
+	int		equal;
+
+	i = 0;
+	j = 0;
+	equal = 0;
+	res = malloc((ft_strlen(envp) + 3) * sizeof(char));
+	while (envp[i])
+	{
+		if (envp[i] == '=' && equal == 0)
+		{
+			res[j++] = envp[i++];
+			res[j++] = '"';
+			equal = 1;
+		}
+		else
+			res[j++] = envp[i++];
+	}
+	res[j] = '"';
+	res[j + 1] ='\0';
+	return (res);
+}
+
 t_envp	*dup_envp(t_envp *envp)
 {
 	t_envp	*dup;
 	t_envp	*dup_temp;
 	t_envp	*temp;
+	char	*str;
 
-	dup = newenvp(envp->content);
+	str = enclose_val(envp->content);
+	dup = newenvp(str);
+	free(str);
 	dup_temp = dup;
 	temp = envp->next;
-	while (temp && temp->next != NULL && temp->next->next != NULL)
+	while (temp && temp->next != NULL)
 	{
-		dup_temp->next = newenvp(temp->content);
-		dup_temp = dup_temp->next;
+		if (ft_strncmp(temp->content, "_=", 2) != 0)
+		{
+			str = enclose_val(temp->content);
+			dup_temp->next = newenvp(str);
+			free(str);
+			dup_temp = dup_temp->next;
+		}
 		temp = temp->next;
 	}
 	return (dup);
@@ -90,21 +125,6 @@ void	swap_envp(t_envp **dup, t_envp *sa, t_envp *sb)
 		prev->next = sb;
 	sa->next = sb->next;
 	sb->next = sa;
-}
-
-void	free_envp(t_envp **envp)
-{
-	t_envp	*temp;
-
-	while (*envp)
-	{
-		temp = temp->next;
-		free((*envp)->content);
-		free(*envp);
-		(*envp)->content = NULL;
-		(*envp)->next = NULL;
-		*envp = temp;
-	}
 }
 
 void	sort_print(t_envp *envp)
@@ -135,7 +155,6 @@ void	sort_print(t_envp *envp)
 			{
 				swap_envp(&dup, temp, temp->next);
 				temp = dup;
-			//	break ;
 			}
 			else
 				temp = temp->next;
@@ -148,10 +167,12 @@ void	sort_print(t_envp *envp)
 	}
 	while (dup)
 	{
-		printf("declare -x %s\n", dup->content);
+		temp = dup;
 		dup = dup->next;
+		printf("declare -x %s\n", temp->content);
+		free(temp->content);
+		free(temp);
 	}
-	free_envp(&dup);
 }
 
 int	export(char **cmd, t_minishell **mnsh)

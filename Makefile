@@ -17,6 +17,7 @@ LIBFT = lib/libft/libft.a
 SRCS = \
 		src/main.c \
 		src/init.c \
+		src/free.c \
 		src/builtins/cd.c \
 		src/builtins/echo.c \
 		src/builtins/env.c \
