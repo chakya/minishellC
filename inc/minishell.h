@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/05 16:08:50 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/10 19:46:38 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,18 +38,18 @@ typedef struct s_minishell
 typedef enum s_type
 {
 	T_INVALID = 0,
-	T_AND,
-	T_OR,
-	T_L,
-	T_R,
-	T_DL,
-	T_DR,
 	T_PIPE,
-	T_COL,
-	T_OPEN_B,
-	T_CLOSE_B,
 	T_CMD,
-	T_ARG
+	T_ARG,
+	T_COL,
+	T_OB,
+	T_CB,
+	T_OR,
+	T_AND,
+	T_TRUNC,
+	T_APPEND,
+	T_INPUT,
+	T_HEREDOC
 }					t_type;
 
 typedef struct s_dls
@@ -67,6 +67,13 @@ typedef struct s_btree
 	struct s_btree	*right;
 }					t_btree;
 
+typedef struct s_ast
+{
+	t_type			type;
+	struct s_dls	*tokens;
+	struct s_ast	**children;
+}					t_ast;
+
 //	built-ins
 int					echo(char **cmd);
 int					env(char **cmd, char **envp);
@@ -75,5 +82,8 @@ t_dls				*parse_token(char *input);
 t_dls				*ft_dlsnew(char *content, t_type type);
 void				ft_dlsadd_back(t_dls **lst, t_dls *new);
 int					execute(t_dls *tokens, char **envp);
+t_ast *parse_ast(t_dls *tokens);
+int execute_ast(t_ast *ast);
+
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/05 16:47:24 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/10 19:42:56 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,24 +56,22 @@ void	ft_skipspaces(char **str)
 
 t_type	get_ops_type(char *ops)
 {
-	if (!ft_strncmp(ops, "&&", 2))
-		return (T_AND);
-	else if (!ft_strncmp(ops, "||", 2))
+	if (!ft_strncmp(ops, "||", 2))
 		return (T_OR);
 	else if (!ft_strncmp(ops, ">>", 2))
-		return (T_DR);
+		return (T_APPEND);
 	else if (!ft_strncmp(ops, "<<", 2))
-		return (T_DL);
+		return (T_HEREDOC);
 	else if (*ops == '(')
-		return (T_OPEN_B);
+		return (T_OB);
 	else if (*ops == ')')
-		return (T_CLOSE_B);
+		return (T_CB);
 	else if (*ops == '|')
 		return (T_PIPE);
 	else if (*ops == '<')
-		return (T_L);
+		return (T_INPUT);
 	else if (*ops == '>')
-		return (T_R);
+		return (T_TRUNC);
 	else if (*ops == ';')
 		return (T_COL);
 	else
@@ -255,10 +253,149 @@ char **process_av(t_dls *tokens, char **envp)
 	return (av);
 }
 
-int	execute(t_dls *tokens, char **envp)
+void simple_command(char **av, char **envp)
+{
+	if (is_builtin(av))
+		return run_builtin(av, envp);
+}
+
+int count_pipe(t_dls *tokens)
+{
+	int count;
+
+	count = 0;
+	while (tokens)
+	{
+		if (tokens->type == T_PIPE)
+			count++;
+		tokens = tokens->next;
+	}
+
+	return count;
+}
+
+t_dls *copy_prev(t_dls **tokens)
+{
+	t_dls *temp;
+
+	temp = (*tokens)->prev;
+	*tokens = (*tokens)->next;
+	free((*tokens)->prev);
+	(*tokens)->prev = NULL;
+	temp->next = NULL;
+	while (temp->prev)
+	{
+		temp = temp->prev;
+	}
+	return temp;
+}
+
+t_dls *copy_next(t_dls **tokens)
+{
+	*tokens = (*tokens)->next;
+	free((*tokens)->prev);
+	(*tokens)->prev = NULL;
+	return (*tokens);
+}
+
+t_type	check_redirect(t_dls *tokens)
+{
+	while (tokens)
+	{
+		if (tokens->type >= T_TRUNC)
+			return (tokens->type);
+		tokens = tokens->next;
+	}
+	return T_CMD;
+}
+
+t_ast **populate_children(t_dls *tokens, int count)
+{
+	t_ast *ast;
+	int i;
+
+	i = 0;
+	ast = (t_ast **)malloc(sizeof(t_ast *) * (count + 2));
+	while (tokens)
+	{
+		if (tokens->type == T_PIPE)
+		{
+			ast->children[i]->tokens = copy_prev(&tokens);
+			ast->children[i]->type = check_redirect(ast->children[i]->tokens);
+			i++;
+		}
+		else
+			tokens = tokens->next;
+	}
+	ast->children[i++]->tokens = copy_next(&tokens);
+	ast->children[i] = NULL;
+}
+
+t_ast *parse_ast(t_dls *tokens)
+{
+	t_ast *ast;
+	int	count;
+
+	ast = (t_ast *)malloc(sizeof(t_ast));
+	if (!ast)
+		return (1);
+	count = count_pipe(tokens);
+	if (count > 0)
+	{
+		ast->type = T_PIPE;
+		ast->children = populate_children(tokens, count);
+	}
+	else
+	{
+		ast->tokens = tokens;
+		ast->type = check_redirect(tokens);
+	}
+	return ast;
+}
+
+int execute_pipe(t_ast **ast)
+{
+	int fd[2];
+	int id;
+
+	if (*ast)
+		return 0;
+	if (pipe(fd) == -1){
+		printf("err");
+		return (1);
+	}
+	id = fork();
+	if (id == 0){
+		dup2(fd[0], STDIN_FILENO);
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		execute_ast((*ast)++);
+	}
+	close(fd[0]);
+	close(fd[1]);
+	waitpid(id, NULL, 0);
+}
+
+int execute_ast(t_ast *ast)
+{
+	if (!ast)
+		return 0;
+	if (ast->type == T_PIPE)
+		execute_pipe(ast->children);
+
+	if (ast->type == T_CMD)
+		execute_tokens(ast->tokens);
+}
+
+int	execute_tokens(t_dls *tokens)
 {
 	char	**av;
+	 char **envp;
 
 	av = process_av(tokens, envp);
-	return run_builtin(av, envp);
+	if (!av)
+		return (1);
+	simple_command(av, envp);
+
 }

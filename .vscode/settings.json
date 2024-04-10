@@ -1,6 +1,8 @@
 {
     "files.associations": {
-        "sstream": "c",
-        "minishell.h": "c"
-    }
+		"sstream": "c",
+		"minishell.h": "c",
+		"wait.h": "c",
+		"types.h": "c"
+	}
 }
