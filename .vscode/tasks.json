@@ -4,14 +4,8 @@
         {
             "label": "compile",
             "type": "shell",
-            "command": "cc",
+            "command": "make",
             "args": [
-                "${workspaceFolder}/*.c",
-                "-L${workspaceFolder}",
-                "-lft",
-                "-o",
-                "a.out",
-                "-g"
             ],
             "group": "build"
         },

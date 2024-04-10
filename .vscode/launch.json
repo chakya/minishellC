@@ -8,12 +8,13 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/a.out",
+            "program": "${workspaceFolder}/minishell",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,
+			"preLaunchTask": "compile",
             "MIMode": "gdb",
             "setupCommands": [
                 {
@@ -28,6 +29,6 @@
                 }
             ]
         }
-        
+
     ]
 }

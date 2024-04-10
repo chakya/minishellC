@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 17:28:39 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/05 01:12:51 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/10 20:28:58 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ t_dls	*ft_dlsnew(char *content, t_type type)
 
 void	ft_dlsadd_back(t_dls **lst, t_dls *new)
 {
-	t_dls	*node;
 	t_dls	*tmp;
 
 	if (!lst || !new)
@@ -39,7 +38,7 @@ void	ft_dlsadd_back(t_dls **lst, t_dls *new)
 	{
         tmp = *lst;
         while (tmp->next)
-        {   
+        {
             tmp = tmp->next;
         }
         new->prev = tmp;

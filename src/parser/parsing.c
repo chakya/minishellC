@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/10 19:42:56 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/10 20:26:32 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,25 +152,6 @@ t_dls	*parse_token(char *input)
 	return (tokens);
 }
 
-int run_builtin(char **av, char **envp)
-{
-	int exit_status;
-
-	if (!ft_strncmp(av[0], "echo", 5))
-		exit_status = echo(av);
-	// else if (!ft_strncmp(av[0], "cd"))
-	// 	cd(av[1]);
-	else if (!ft_strncmp(av[0], "env", 4))
-		exit_status = env(av, envp);
-	else if (!ft_strncmp(av[0], "pwd", 4))
-		pwd();
-	// else if (!ft_strncmp(av[0], "export"))
-	// 	export(av);
-	// else if (!ft_strncmp(av[0], "unset"))
-	// 	unset(av);
-	return (exit_status);
-}
-
 char **parse_to_arg(t_dls *tokens)
 {
 	t_dls	*tmp;
@@ -253,12 +234,6 @@ char **process_av(t_dls *tokens, char **envp)
 	return (av);
 }
 
-void simple_command(char **av, char **envp)
-{
-	if (is_builtin(av))
-		return run_builtin(av, envp);
-}
-
 int count_pipe(t_dls *tokens)
 {
 	int count;
@@ -311,24 +286,25 @@ t_type	check_redirect(t_dls *tokens)
 
 t_ast **populate_children(t_dls *tokens, int count)
 {
-	t_ast *ast;
+	t_ast **children;
 	int i;
 
 	i = 0;
-	ast = (t_ast **)malloc(sizeof(t_ast *) * (count + 2));
+	children = (t_ast **)malloc(sizeof(t_ast *) * (count + 2));
 	while (tokens)
 	{
 		if (tokens->type == T_PIPE)
 		{
-			ast->children[i]->tokens = copy_prev(&tokens);
-			ast->children[i]->type = check_redirect(ast->children[i]->tokens);
+			children[i]->tokens = copy_prev(&tokens);
+			children[i]->type = check_redirect(children[i]->tokens);
 			i++;
 		}
 		else
 			tokens = tokens->next;
 	}
-	ast->children[i++]->tokens = copy_next(&tokens);
-	ast->children[i] = NULL;
+	children[i++]->tokens = copy_next(&tokens);
+	children[i] = NULL;
+	return children;
 }
 
 t_ast *parse_ast(t_dls *tokens)
@@ -338,7 +314,7 @@ t_ast *parse_ast(t_dls *tokens)
 
 	ast = (t_ast *)malloc(sizeof(t_ast));
 	if (!ast)
-		return (1);
+		return (NULL);
 	count = count_pipe(tokens);
 	if (count > 0)
 	{
@@ -353,13 +329,13 @@ t_ast *parse_ast(t_dls *tokens)
 	return ast;
 }
 
-int execute_pipe(t_ast **ast)
+int execute_pipe(t_ast **ast, t_minishell **mnst, char **envp)
 {
 	int fd[2];
 	int id;
 
 	if (*ast)
-		return 0;
+		return 1;
 	if (pipe(fd) == -1){
 		printf("err");
 		return (1);
@@ -370,32 +346,33 @@ int execute_pipe(t_ast **ast)
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
 		close(fd[1]);
-		execute_ast((*ast)++);
+		execute_ast((*ast)++, mnst, envp);
 	}
 	close(fd[0]);
 	close(fd[1]);
 	waitpid(id, NULL, 0);
+	return (0);
 }
 
-int execute_ast(t_ast *ast)
-{
-	if (!ast)
-		return 0;
-	if (ast->type == T_PIPE)
-		execute_pipe(ast->children);
-
-	if (ast->type == T_CMD)
-		execute_tokens(ast->tokens);
-}
-
-int	execute_tokens(t_dls *tokens)
+int	execute_tokens(t_dls *tokens, t_minishell **mnst, char **envp)
 {
 	char	**av;
-	 char **envp;
 
 	av = process_av(tokens, envp);
 	if (!av)
 		return (1);
-	simple_command(av, envp);
+	excu(av, mnst);
+	return (0);
+}
 
+int execute_ast(t_ast *ast, t_minishell **mnst, char** envp)
+{
+	if (!ast)
+		return 0;
+	if (ast->type == T_PIPE)
+		execute_pipe(ast->children, mnst, envp);
+
+	if (ast->type == T_CMD)
+		execute_tokens(ast->tokens, mnst, envp);
+	return 1;
 }
