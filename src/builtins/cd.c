@@ -78,7 +78,7 @@ int	cd(char **cmd, t_minishell **mnsh)
 	}
 	if (cmd[1] && chdir(cmd[1]) != 0)
 	{
-		printf("cd: %s: No such file or directory", cmd[1]);
+		printf("cd: %s: No such file or directory\n", cmd[1]);
 		return (1);
 	}
 	else if (!cmd[1])

@@ -6,7 +6,7 @@
 #    By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/05 22:26:43 by dphang            #+#    #+#              #
-#    Updated: 2024/04/10 20:28:48 by cwijaya          ###   ########.fr        #
+#    Updated: 2024/04/11 16:28:44 by cwijaya          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,8 @@ CFLAGS = -Wall -Wextra -Werror -g
 LIBFT = lib/libft/libft.a
 SRCS = \
 		src/main.c \
-		src/init.c \
 		src/free.c \
+		src/init.c \
 		src/builtins/cd.c \
 		src/builtins/echo.c \
 		src/builtins/env.c \
@@ -28,7 +28,8 @@ SRCS = \
 		src/builtins/builtins_utils.c \
 		src/excu/excu.c \
 		src/parser/parsing.c \
-		src/lst/dls.c
+		src/lst/dls.c \
+		src/excu/excu_cmd.c
 #		src/lst/dls.c \
 		src/parser/parsing.c \
 		src/parser/split.c \
