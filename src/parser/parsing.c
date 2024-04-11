@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/10 20:26:32 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/11 16:11:17 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,14 +254,18 @@ t_dls *copy_prev(t_dls **tokens)
 	t_dls *temp;
 
 	temp = (*tokens)->prev;
-	*tokens = (*tokens)->next;
-	free((*tokens)->prev);
-	(*tokens)->prev = NULL;
-	temp->next = NULL;
-	while (temp->prev)
+
+	if ((*tokens)->next)
 	{
-		temp = temp->prev;
+		*tokens = (*tokens)->next;
+		free((*tokens)->prev);
+		(*tokens)->prev = NULL;
+		temp->next = NULL;
 	}
+	else
+		*tokens = NULL;
+	while (temp->prev)
+		temp = temp->prev;
 	return temp;
 }
 
@@ -293,8 +297,9 @@ t_ast **populate_children(t_dls *tokens, int count)
 	children = (t_ast **)malloc(sizeof(t_ast *) * (count + 2));
 	while (tokens)
 	{
-		if (tokens->type == T_PIPE)
+		if (tokens->type == T_PIPE || tokens->next == NULL)
 		{
+			children[i] = (t_ast *)malloc(sizeof(t_ast));
 			children[i]->tokens = copy_prev(&tokens);
 			children[i]->type = check_redirect(children[i]->tokens);
 			i++;
@@ -302,7 +307,6 @@ t_ast **populate_children(t_dls *tokens, int count)
 		else
 			tokens = tokens->next;
 	}
-	children[i++]->tokens = copy_next(&tokens);
 	children[i] = NULL;
 	return children;
 }
@@ -329,12 +333,12 @@ t_ast *parse_ast(t_dls *tokens)
 	return ast;
 }
 
-int execute_pipe(t_ast **ast, t_minishell **mnst, char **envp)
+int execute_pipe(t_ast **children, t_minishell **mnst, char **envp, int first)
 {
 	int fd[2];
 	int id;
 
-	if (*ast)
+	if (!*children)
 		return 1;
 	if (pipe(fd) == -1){
 		printf("err");
@@ -342,15 +346,22 @@ int execute_pipe(t_ast **ast, t_minishell **mnst, char **envp)
 	}
 	id = fork();
 	if (id == 0){
-		dup2(fd[0], STDIN_FILENO);
-		dup2(fd[1], STDOUT_FILENO);
+		if (children[1])
+			dup2(fd[1], STDOUT_FILENO);
+		if (!first)
+			dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		close(fd[1]);
-		execute_ast((*ast)++, mnst, envp);
+		execute_ast(*children, mnst, envp);
+		exit(1);
 	}
-	close(fd[0]);
-	close(fd[1]);
-	waitpid(id, NULL, 0);
+	else
+	{
+		execute_pipe(&children[1], mnst, envp, 0);
+		close(fd[0]);
+		close(fd[1]);
+		waitpid(id, NULL, 0);
+	}
 	return (0);
 }
 
@@ -370,8 +381,7 @@ int execute_ast(t_ast *ast, t_minishell **mnst, char** envp)
 	if (!ast)
 		return 0;
 	if (ast->type == T_PIPE)
-		execute_pipe(ast->children, mnst, envp);
-
+		execute_pipe(ast->children, mnst, envp, 1);
 	if (ast->type == T_CMD)
 		execute_tokens(ast->tokens, mnst, envp);
 	return 1;
