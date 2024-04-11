@@ -1,20 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_isdigit.c                                       :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dphang <dphang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/06 10:38:38 by dphang            #+#    #+#             */
-/*   Updated: 2023/09/06 11:05:50 by dphang           ###   ########.fr       */
+/*   Created: 2024/04/03 14:02:40 by dphang            #+#    #+#             */
+/*   Updated: 2024/04/05 09:50:48 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../../inc/minishell.h"
 
-int	ft_isdigit(int c)
+int	pwd(void)
 {
-	if (c >= '0' && c <= '9')
-		return (100);
-	return (0);
+	char	*wd;
+
+	wd = (char *)malloc(PATH_MAX * sizeof(char));
+	if (wd != NULL)
+	{
+		getcwd(wd, PATH_MAX);
+		printf("%s\n", wd);
+		free(wd);
+		return (0);
+	}
+	return (1);
 }
