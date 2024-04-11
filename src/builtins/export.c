@@ -92,21 +92,6 @@ void	swap_envp(t_envp **dup, t_envp *sa, t_envp *sb)
 	sb->next = sa;
 }
 
-void	free_envp(t_envp **envp)
-{
-	t_envp	*temp;
-
-	while (*envp)
-	{
-		temp = temp->next;
-		free((*envp)->content);
-		free(*envp);
-		(*envp)->content = NULL;
-		(*envp)->next = NULL;
-		*envp = temp;
-	}
-}
-
 void	sort_print(t_envp *envp)
 {
 	t_envp	*dup;
