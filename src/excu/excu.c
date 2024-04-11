@@ -45,7 +45,11 @@ void    builtins(char **cmd, t_minishell **mnsh)
 
 void    excu(char **cmd, t_minishell **mnsh)
 {
-    if (is_builtins(cmd))
-        builtins(cmd, mnsh);
-    //else find executable via PATH env var (?)
+    if (cmd[0])
+    {
+        if (is_builtins(cmd))
+            builtins(cmd, mnsh);
+        else
+            excu_cmd(cmd, (*mnsh)->envp);
+    }
 }
