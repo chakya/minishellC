@@ -50,13 +50,19 @@ int excu_cmd(char **cmd, t_envp *envp)
 	path = get_path(envp);
 	i = 0;
 	excu_cmd = ft_strjoin(path[i], cmd[0]);
-	while (execve(excu_cmd, cmd, NULL) == -1)
+	while (path[i] && execve(excu_cmd, cmd, NULL) == -1)
 	{
 		free(excu_cmd);
 		i++;
-		excu_cmd = ft_strjoin(path[i], cmd[0]);
+		if (path[i])
+			excu_cmd = ft_strjoin(path[i], cmd[0]);
+		else
+			excu_cmd = NULL;
 	}
-	free(excu_cmd);
+	if (excu_cmd)
+		free(excu_cmd);
+	else
+		printf("%s: command not found\n", cmd[0]);
 	i = 0;
 	while (path[i])
 	{
