@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   excu.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 09:40:29 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/08 09:40:30 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/11 18:54:21 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,9 @@ void    excu(char **cmd, t_minishell **mnsh)
 {
     if (cmd[0])
     {
-        if (is_builtins(cmd))
-            builtins(cmd, mnsh);
-        else
+        // if (is_builtins(cmd))
+        //     builtins(cmd, mnsh);
+        // else
             excu_cmd(cmd, (*mnsh)->envp);
     }
 }

@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/10 20:25:44 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/12 16:40:15 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,18 +33,6 @@
 #include <fcntl.h>
 #include <termios.h>
 
-typedef struct s_envp
-{
-    char            *content;
-    struct s_envp   *next;
-}                   t_envp;
-
-typedef struct	s_minishell
-{
-    t_envp	*envp;
-    int		exit_status;
-}			t_minishell;
-
 typedef enum s_type
 {
 	T_INVALID = 0,
@@ -70,13 +58,6 @@ typedef struct s_dls
 	struct s_dls	*next;
 }					t_dls;
 
-typedef struct s_btree
-{
-	char			*content;
-	struct s_btree	*left;
-	struct s_btree	*right;
-}					t_btree;
-
 typedef struct s_ast
 {
 	t_type			type;
@@ -84,13 +65,27 @@ typedef struct s_ast
 	struct s_ast	**children;
 }					t_ast;
 
+typedef struct s_envp
+{
+    char            *content;
+    struct s_envp   *next;
+}                   t_envp;
+
+typedef struct	s_minishell
+{
+    t_envp	*envp;
+    int		exit_status;
+	t_ast	*ast;
+	int		*opipe;
+}			t_minishell;
+
 int					pwd(void);
 t_dls				*parse_token(char *input);
 t_dls				*ft_dlsnew(char *content, t_type type);
 void				ft_dlsadd_back(t_dls **lst, t_dls *new);
 int					execute(t_dls *tokens, char **envp);
 t_ast *parse_ast(t_dls *tokens);
-int execute_ast(t_ast *ast, t_minishell **mnst, char** envp);
+int execute_ast(t_minishell **mnst, int *opipe);
 
 //	=========================   built-ins   ===================================
 //	builtins_utils
@@ -103,7 +98,7 @@ int echo(char **cmd);
 //	env
 int	env(char **cmd, t_minishell *mnsh);
 //  exit
-int	mnsh_exit(t_minishell **mnsh);
+int	mnsh_exit(t_minishell **mnsh, int *npipe);
 //  export
 int export(char **cmd, t_minishell **mnsh);
 //	pwd
@@ -116,7 +111,7 @@ void    excu(char **cmd, t_minishell **mnsh);
 //  =========================   redirection   =================================
 //  get_path
 char	**get_path(t_envp *envp);
-int excu_cmd(char **cmd, t_envp *envp);
+void excu_cmd(char **cmd, t_envp *envp);
 //  =========================   initialization   ==============================
 t_envp	*newenvp(char *var);
 void	init_mnsh(char **envp, t_minishell **mnsh);

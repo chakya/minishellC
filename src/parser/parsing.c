@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/11 16:11:17 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/12 17:04:25 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,26 +210,25 @@ char *get_dollar(char *str, char **envp)
 	return (str);
 }
 
-char **process_av(t_dls *tokens, char **envp)
+char **process_av(t_dls *tokens)
 {
 	t_dls	*tmp;
 	char	**av;
-	char	*dollar_var;
 	int		i;
 
 	tmp = tokens;
 	i = 0;
-	while (tmp)
-	{
-		if (tmp->content[0] == '$')
-		{
-			dollar_var = get_dollar(tmp->content, envp);
-			free(tmp->content);
-			tmp->content = dollar_var;
-		}
-		//else if for * wild card
-		tmp = tmp->next;
-	}
+	// while (tmp)
+	// {
+	// 	if (tmp->content[0] == '$')
+	// 	{
+	// 		dollar_var = get_dollar(tmp->content, envp);
+	// 		free(tmp->content);
+	// 		tmp->content = dollar_var;
+	// 	}
+	// 	//else if for * wild card
+	// 	tmp = tmp->next;
+	// }
 	av = parse_to_arg(tokens);
 	return (av);
 }
@@ -333,56 +332,82 @@ t_ast *parse_ast(t_dls *tokens)
 	return ast;
 }
 
-int execute_pipe(t_ast **children, t_minishell **mnst, char **envp, int first)
+int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
+{
+	char	**av;
+
+	av = process_av(tokens);
+	if (!av)
+		return (1);
+	excu(av, mnsh);
+	return (0);
+}
+
+int execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 {
 	int fd[2];
 	int id;
 
 	if (!*children)
 		return 1;
-	if (pipe(fd) == -1){
-		printf("err");
-		return (1);
-	}
+	if (children[1])
+		pipe(fd);
 	id = fork();
-	if (id == 0){
+	if (id == 0)
+	{
 		if (children[1])
 			dup2(fd[1], STDOUT_FILENO);
-		if (!first)
-			dup2(fd[0], STDIN_FILENO);
+		if (opipe)
+			dup2(opipe[0], STDIN_FILENO);
+		// ft_putstr_fd((*children)->tokens->content, 2);
+		// if (!ft_strcmp((*children)->tokens->content,"cat"))
+		// {
+		// 	int i[5];
+		// 	read(STDIN_FILENO, &i, 5);
+		// 	write(2, &i, 5);
+		// }
 		close(fd[0]);
 		close(fd[1]);
-		execute_ast(*children, mnst, envp);
+		if (opipe)
+		{
+			close(opipe[0]);
+			close(opipe[1]);
+		}
+		execute_tokens((*children)->tokens, mnsh);
 		exit(1);
 	}
 	else
 	{
-		execute_pipe(&children[1], mnst, envp, 0);
+		execute_pipe(&children[1], NULL, mnsh);
 		close(fd[0]);
 		close(fd[1]);
+		if (opipe)
+		{
+			close(opipe[0]);
+			close(opipe[1]);
+		}
 		waitpid(id, NULL, 0);
 	}
 	return (0);
 }
 
-int	execute_tokens(t_dls *tokens, t_minishell **mnst, char **envp)
+int execute_ast(t_minishell **mnsh, int *opipe)
 {
-	char	**av;
+	int id;
 
-	av = process_av(tokens, envp);
-	if (!av)
-		return (1);
-	excu(av, mnst);
-	return (0);
-}
-
-int execute_ast(t_ast *ast, t_minishell **mnst, char** envp)
-{
-	if (!ast)
+	if (!(*mnsh)->ast)
 		return 0;
-	if (ast->type == T_PIPE)
-		execute_pipe(ast->children, mnst, envp, 1);
-	if (ast->type == T_CMD)
-		execute_tokens(ast->tokens, mnst, envp);
+	if ((*mnsh)->ast->type == T_PIPE)
+		execute_pipe((*mnsh)->ast->children, opipe, mnsh);
+	else if ((*mnsh)->ast->type == T_CMD)
+	{
+		id = fork();
+		if (id == 0)
+			execute_tokens((*mnsh)->ast->tokens, mnsh);
+		else
+		{
+			waitpid(id, NULL, 0);
+		}
+	}
 	return 1;
 }

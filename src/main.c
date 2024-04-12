@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 09:06:01 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/10 20:25:05 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/12 16:23:16 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,12 +81,14 @@ int	main(int ac, char **av, char **envp)
 	while (!exit_sig)
 	{
 		input = readline("$ ");
+		add_history(input);
 		// input = "echo '  test  i'";
 		if (!input)
 			return (1);
 		tokens = parse_token(input);
 		// printf_tokens(tokens);
-		execute_ast(parse_ast(tokens), &mnsh, envp);
+		mnsh->ast = parse_ast(tokens);
+		execute_ast(&mnsh, NULL);
 		// scode = exec(syntax);
 	}
 	// //test

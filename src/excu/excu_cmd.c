@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   excu_cmd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 17:25:39 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/11 14:53:54 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/11 17:07:07 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char	**get_path(t_envp *envp)
     return (path);
 }
 
-int excu_cmd(char **cmd, t_envp *envp)
+void excu_cmd(char **cmd, t_envp *envp)
 {
     char	**path;
 	char	*excu_cmd;
@@ -50,13 +50,17 @@ int excu_cmd(char **cmd, t_envp *envp)
 	path = get_path(envp);
 	i = 0;
 	excu_cmd = ft_strjoin(path[i], cmd[0]);
-	while (execve(excu_cmd, cmd, NULL) == -1)
+	while (path[i] && execve(excu_cmd, cmd, NULL) == -1)
 	{
 		free(excu_cmd);
 		i++;
-		excu_cmd = ft_strjoin(path[i], cmd[0]);
+		if (path[i])
+			excu_cmd = ft_strjoin(path[i], cmd[0]);
+		else
+			excu_cmd = NULL;
 	}
-	free(excu_cmd);
+	if (excu_cmd)
+		free(excu_cmd);
 	i = 0;
 	while (path[i])
 	{
@@ -64,5 +68,4 @@ int excu_cmd(char **cmd, t_envp *envp)
 		i++;
 	}
     free(path);
-	return (0);
 }
