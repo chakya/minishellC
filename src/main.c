@@ -12,43 +12,7 @@
 
 #include "../inc/minishell.h"
 
-// void	init_mnsh(char **envp, t_minishell **mnsh)
-// {
-// 	int	i;
-// 	int	envar;
-
-// 	i = 0;
-// 	envar = 0;
-// 	while (envp[envar])
-// 	{
-// 		envar++;
-// 	}
-// 	*mnsh = malloc(sizeof(t_minishell));
-// 	if (!(*mnsh))
-// 		return ;
-// 	(*mnsh)->envp = malloc((envar + 1) * sizeof(char *));
-// 	if (!((*mnsh)->envp))
-// 		return ;
-// 	while (envp[i])
-// 	{
-// 		(*mnsh)->envp[i] = ft_strdup(envp[i]);
-// 		i++;
-// 	}
-// 	(*mnsh)->envp[i] = '\0';
-// 	(*mnsh)->exit_status = 0;
-// }
-
-// int	main(int ac, char **av, char **envp)
-// {
-// 	(void)ac;
-// 	t_minishell *mnsh;
-
-// 	init_mnsh(envp, &mnsh);
-// 	echo(av);
-// 	//pwd();
-// 	//env(av, mnsh->envp);
-// 	return (0);
-// }
+t_signals	g_sigs;
 
 int printf_tokens(t_dls *tokens)
 {
@@ -69,16 +33,20 @@ int	main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 	t_minishell *mnsh;
-
+	
 	init_mnsh(envp, &mnsh);
 	char 	*input;
 	t_dls *tokens;
+	init_sigs();
+	sigaction(SIGINT, &g_sigs.sigint_sa, NULL);
+	sigaction(EOF, &g_sigs.eof_sa, NULL);
+	sigaction(SIGQUIT, &g_sigs.sigquit_sa, NULL);
 	// int		scode;
-	int		exit_sig;
+	//int		exit_sig;
 
-	exit_sig = 0;
+	//exit_sig = 0;
 	// setup signal
-	while (!exit_sig)
+	while (!g_sigs.exit_sig)
 	{
 		input = readline("$ ");
 		// input = "echo '  test  i'";
@@ -89,24 +57,6 @@ int	main(int ac, char **av, char **envp)
 		execute_ast(parse_ast(tokens), &mnsh, envp);
 		// scode = exec(syntax);
 	}
-	// //test
-	// t_envp	*temp;
-	// temp = mnsh->envp;
-	// while (temp)
-	// {
-	// 	printf("%s\n", temp->content);
-	// 	temp = temp->next;
-	// }
-	// //end test
-	// excu(av + 1, &mnsh);
-	// //test
-	// temp = mnsh->envp;
-	// while (temp)
-	// {
-	// 	printf("%s\n", temp->content);
-	// 	temp = temp->next;
-	// }
-	// //end test
 	free_all(&mnsh);
 	return (0);
 }

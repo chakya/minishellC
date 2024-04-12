@@ -45,6 +45,14 @@ typedef struct	s_minishell
     int		exit_status;
 }			t_minishell;
 
+typedef struct  s_signals
+{
+    struct sigaction    sigint_sa;
+    struct sigaction    eof_sa;
+    struct sigaction    sigquit_sa;
+    int                 exit_sig;
+}                       t_signals;
+
 typedef enum s_type
 {
 	T_INVALID = 0,
@@ -84,7 +92,8 @@ typedef struct s_ast
 	struct s_ast	**children;
 }					t_ast;
 
-int					pwd(void);
+extern t_signals g_sigs;
+
 t_dls				*parse_token(char *input);
 t_dls				*ft_dlsnew(char *content, t_type type);
 void				ft_dlsadd_back(t_dls **lst, t_dls *new);
@@ -103,7 +112,7 @@ int echo(char **cmd);
 //	env
 int	env(char **cmd, t_minishell *mnsh);
 //  exit
-int	mnsh_exit(t_minishell **mnsh);
+int	mnsh_exit(void);
 //  export
 int export(char **cmd, t_minishell **mnsh);
 //	pwd
@@ -120,6 +129,8 @@ int excu_cmd(char **cmd, t_envp *envp);
 //  =========================   initialization   ==============================
 t_envp	*newenvp(char *var);
 void	init_mnsh(char **envp, t_minishell **mnsh);
+//  =========================   signals   ========================================
+void    init_sigs(void);
 //  =========================   free   ========================================
 void	free_envp(t_envp **envp);
 void    free_all(t_minishell **mnsh);

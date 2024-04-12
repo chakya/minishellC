@@ -18,6 +18,7 @@ SRCS = \
 		src/main.c \
 		src/free.c \
 		src/init.c \
+		src/signals.c \
 		src/builtins/cd.c \
 		src/builtins/echo.c \
 		src/builtins/env.c \

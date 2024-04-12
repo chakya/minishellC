@@ -215,10 +215,10 @@ char **process_av(t_dls *tokens, char **envp)
 	t_dls	*tmp;
 	char	**av;
 	char	*dollar_var;
-	int		i;
+	//int		i;
 
 	tmp = tokens;
-	i = 0;
+	//i = 0;
 	while (tmp)
 	{
 		if (tmp->content[0] == '$')

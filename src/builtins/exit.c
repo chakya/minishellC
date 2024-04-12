@@ -12,8 +12,8 @@
 
 #include "../../inc/minishell.h"
 
-int	mnsh_exit(t_minishell **mnsh)
+int	mnsh_exit(void)
 {
-	(*mnsh)->exit_status = 1;
+	g_sigs.exit_sig = 1;
 	return (0);
 }
