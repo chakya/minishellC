@@ -34,7 +34,7 @@ void    builtins(char **cmd, t_minishell **mnsh)
     else if (ft_strcmp(cmd[0], "env") == 0)
         env(cmd, *mnsh);
     else if (ft_strcmp(cmd[0], "exit") == 0)
-        mnsh_exit();
+        mnsh_exit(mnsh);
     else if (ft_strcmp(cmd[0], "export") == 0)
         export(cmd, mnsh);
     else if (ft_strcmp(cmd[0], "pwd") == 0)

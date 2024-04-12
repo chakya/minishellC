@@ -14,15 +14,14 @@
 
 void    sigint_handler(int sig)
 {
-    if (getpid() == 0)
-        kill(0, sig);
+    (void)sig;
 }
 
-void    eof_handler(int sig)
+int    eof_handler(t_minishell **mnsh)
 {
-    (void)sig;
     printf("exit\n");
-    mnsh_exit();
+    mnsh_exit(mnsh);
+    return (1);
 }
 
 void    init_sigs(void)
@@ -30,11 +29,7 @@ void    init_sigs(void)
     g_sigs.sigint_sa.sa_flags = 0;
 	sigemptyset(&(g_sigs.sigint_sa.sa_mask));
 	g_sigs.sigint_sa.sa_handler = &sigint_handler;
-    g_sigs.eof_sa.sa_flags = 0;
-	sigemptyset(&(g_sigs.eof_sa.sa_mask));
-	g_sigs.eof_sa.sa_handler = &eof_handler;
     g_sigs.sigquit_sa.sa_flags = 0;
 	sigemptyset(&(g_sigs.sigquit_sa.sa_mask));
 	g_sigs.sigquit_sa.sa_handler = SIG_IGN;
-    g_sigs.exit_sig = 0;
 }

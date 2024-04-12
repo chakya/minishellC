@@ -39,19 +39,19 @@ int	main(int ac, char **av, char **envp)
 	t_dls *tokens;
 	init_sigs();
 	sigaction(SIGINT, &g_sigs.sigint_sa, NULL);
-	sigaction(EOF, &g_sigs.eof_sa, NULL);
 	sigaction(SIGQUIT, &g_sigs.sigquit_sa, NULL);
 	// int		scode;
 	//int		exit_sig;
 
 	//exit_sig = 0;
 	// setup signal
-	while (!g_sigs.exit_sig)
+	while (!mnsh->exit_sig)
 	{
-		input = readline("$ ");
+		input = readline("minicharles$ ");
 		// input = "echo '  test  i'";
+		add_history(input);
 		if (!input)
-			return (1);
+			return (eof_handler(&mnsh));
 		tokens = parse_token(input);
 		// printf_tokens(tokens);
 		execute_ast(parse_ast(tokens), &mnsh, envp);

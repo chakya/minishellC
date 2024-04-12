@@ -42,15 +42,13 @@ typedef struct s_envp
 typedef struct	s_minishell
 {
     t_envp	*envp;
-    int		exit_status;
+	int		exit_sig;
 }			t_minishell;
 
 typedef struct  s_signals
 {
     struct sigaction    sigint_sa;
-    struct sigaction    eof_sa;
     struct sigaction    sigquit_sa;
-    int                 exit_sig;
 }                       t_signals;
 
 typedef enum s_type
@@ -112,7 +110,7 @@ int echo(char **cmd);
 //	env
 int	env(char **cmd, t_minishell *mnsh);
 //  exit
-int	mnsh_exit(void);
+int	mnsh_exit(t_minishell **mnsh);
 //  export
 int export(char **cmd, t_minishell **mnsh);
 //	pwd
@@ -129,7 +127,8 @@ int excu_cmd(char **cmd, t_envp *envp);
 //  =========================   initialization   ==============================
 t_envp	*newenvp(char *var);
 void	init_mnsh(char **envp, t_minishell **mnsh);
-//  =========================   signals   ========================================
+//  =========================   signals   =====================================
+int    eof_handler(t_minishell **mnsh);
 void    init_sigs(void);
 //  =========================   free   ========================================
 void	free_envp(t_envp **envp);
