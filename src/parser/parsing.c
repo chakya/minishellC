@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/12 17:04:25 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/15 09:21:10 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,12 +212,12 @@ char *get_dollar(char *str, char **envp)
 
 char **process_av(t_dls *tokens)
 {
-	t_dls	*tmp;
+	// t_dls	*tmp;
 	char	**av;
-	int		i;
+	// int		i;
 
-	tmp = tokens;
-	i = 0;
+	// tmp = tokens;
+	// i = 0;
 	// while (tmp)
 	// {
 	// 	if (tmp->content[0] == '$')
@@ -345,20 +345,32 @@ int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 
 int execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 {
-	int fd[2];
+	int fd[2] = {0 , 0};
 	int id;
 
 	if (!*children)
 		return 1;
 	if (children[1])
 		pipe(fd);
+	// ft_putnbr_fd(!!children[1],2);
 	id = fork();
 	if (id == 0)
 	{
 		if (children[1])
+		{
+			// printf("%d", fd[1]);
+			// ft_putnbr_fd(fd[1], 2);
+			// ft_putnbr_fd(fd[1], 2);
 			dup2(fd[1], STDOUT_FILENO);
+			// ft_putstr_fd((*children)->tokens->content, 2);
+		}
 		if (opipe)
-			dup2(opipe[0], STDIN_FILENO);
+		{
+			// printf("%d", opipe[0]);
+			// ft_putstr_fd((*children)->tokens->content, 2);
+			// ft_putnbr_fd(opipe[0], 2);
+			dup2(opipe[0], STDIN_FILENO);	
+		}
 		// ft_putstr_fd((*children)->tokens->content, 2);
 		// if (!ft_strcmp((*children)->tokens->content,"cat"))
 		// {
@@ -366,8 +378,11 @@ int execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 		// 	read(STDIN_FILENO, &i, 5);
 		// 	write(2, &i, 5);
 		// }
-		close(fd[0]);
-		close(fd[1]);
+		if (fd[0])
+		{			
+			close(fd[0]);
+			close(fd[1]);
+		}
 		if (opipe)
 		{
 			close(opipe[0]);
@@ -378,14 +393,12 @@ int execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 	}
 	else
 	{
-		execute_pipe(&children[1], NULL, mnsh);
-		close(fd[0]);
-		close(fd[1]);
 		if (opipe)
 		{
 			close(opipe[0]);
 			close(opipe[1]);
 		}
+		execute_pipe(&children[1], fd, mnsh);
 		waitpid(id, NULL, 0);
 	}
 	return (0);

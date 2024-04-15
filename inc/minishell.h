@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/12 16:40:15 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/12 09:23:53 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int echo(char **cmd);
 //	env
 int	env(char **cmd, t_minishell *mnsh);
 //  exit
-int	mnsh_exit(t_minishell **mnsh, int *npipe);
+int	mnsh_exit(t_minishell **mnsh);
 //  export
 int export(char **cmd, t_minishell **mnsh);
 //	pwd
