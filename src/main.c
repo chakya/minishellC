@@ -12,8 +12,6 @@
 
 #include "../inc/minishell.h"
 
-t_signals	g_sigs;
-
 int printf_tokens(t_dls *tokens)
 {
 	t_dls *tmp;
@@ -33,18 +31,16 @@ int	main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 	t_minishell *mnsh;
-	
-	init_mnsh(envp, &mnsh);
+	t_signals	sigs;
 	char 	*input;
 	t_dls *tokens;
-	init_sigs();
-	sigaction(SIGINT, &g_sigs.sigint_sa, NULL);
-	sigaction(SIGQUIT, &g_sigs.sigquit_sa, NULL);
 	// int		scode;
 	//int		exit_sig;
 
 	//exit_sig = 0;
 	// setup signal
+	init_mnsh(envp, &mnsh);
+	init_sigs(&sigs);
 	while (!mnsh->exit_sig)
 	{
 		input = readline("minicharles$ ");

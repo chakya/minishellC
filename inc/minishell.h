@@ -90,8 +90,6 @@ typedef struct s_ast
 	struct s_ast	**children;
 }					t_ast;
 
-extern t_signals g_sigs;
-
 t_dls				*parse_token(char *input);
 t_dls				*ft_dlsnew(char *content, t_type type);
 void				ft_dlsadd_back(t_dls **lst, t_dls *new);
@@ -128,8 +126,8 @@ int excu_cmd(char **cmd, t_envp *envp);
 t_envp	*newenvp(char *var);
 void	init_mnsh(char **envp, t_minishell **mnsh);
 //  =========================   signals   =====================================
-int    eof_handler(t_minishell **mnsh);
-void    init_sigs(void);
+int		eof_handler(t_minishell **mnsh);
+void    init_sigs(t_signals *sigs);
 //  =========================   free   ========================================
 void	free_envp(t_envp **envp);
 void    free_all(t_minishell **mnsh);
