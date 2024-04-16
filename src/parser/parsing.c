@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/15 09:21:10 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/16 09:08:03 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -332,6 +332,23 @@ t_ast *parse_ast(t_dls *tokens)
 	return ast;
 }
 
+// int	proc_redir(t_dls *tokens)
+// {
+// 	while (tokens)
+// 	{
+// 		if (ft_strcmp(tokens, "<") == 0)
+			
+// 		else if(ft_strcmp(tokens, "<<") == 0 )
+		
+// 		else if(ft_strcmp(tokens, ">") == 0)
+		
+// 		else if(ft_strcmp(tokens, ">>") == 0)
+
+// 		tokens = tokens->next;
+// 	}
+// 	return (0);
+// }
+
 int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 {
 	char	**av;
@@ -339,6 +356,7 @@ int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 	av = process_av(tokens);
 	if (!av)
 		return (1);
+	// proc_redir(tokens);
 	excu(av, mnsh);
 	return (0);
 }
