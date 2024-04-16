@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mnsh_cmd.c                                         :+:      :+:    :+:   */
+/*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dphang <dphang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 14:02:40 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/04 16:59:29 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/16 16:49:43 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,12 @@ int	is_envar(char *str)
 	{
 		if (str[i] == '$' && (ft_isalnum(str[i + 1]) || str[i + 1] == '_'))
 			return (1);
-		// else if (str[i] == '$' && str[i + 1] == '?')
-		// 	return (2);
+		else if (str[i] == '$' && str[i + 1] == '?')
+			return (2);
 		i++;
 	}
 	return (0);
 }
-
 
 // More than 25 lines
 void	put_enval(char *str, int *i)
@@ -59,25 +58,20 @@ void	put_enval(char *str, int *i)
 	free(name);
 }
 
-/* Have to handle single quote for environment variable
-	eg.: '$HOME' should print $HOME
-   $? not handled yet.
-*/
-void	put_envar(char *str)
+void	put_envar(char *str, unsigned char exit_code)
 {
-	int		i;
+	int	i;
 
 	i = 0;
 	while (str[i])
 	{
-		if (str[i] == '$' && ft_isalnum(str[i + 1]))
-		{
+		if (str[i] == '$' && (ft_isalnum(str[i + 1] || str[i + 1] == '_')))
 			put_enval(str, &i);
+		else if (str[i] == '$' && str[i + 1] == '?')
+		{
+			printf("%d", exit_code);
+			i += 2;
 		}
-		// else if (str[i] == '$' && str[i + 1] == '?')
-		// {
-		// 	// handle exit status
-		// }
 		else
 		{
 			ft_putchar_fd(str[i], 1);
@@ -86,7 +80,7 @@ void	put_envar(char *str)
 	}
 }
 
-int	echo(char **cmd)
+int	echo(char **cmd, unsigned char exit_code)
 {
 	int	i;
 	int	flag;
@@ -101,7 +95,7 @@ int	echo(char **cmd)
 	while (cmd[i] && !is_redir(cmd[i]))
 	{
 		if (is_envar(cmd[i]))
-			put_envar(cmd[i]);
+			put_envar(cmd[i], exit_code);
 		else if ((i > 1 && flag == 0) || i > 2)
 			printf(" %s", cmd[i]);
 		else

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mnsh_cmd.c                                         :+:      :+:    :+:   */
+/*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dphang <dphang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 14:02:40 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/04 16:59:29 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/16 16:59:03 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	add_exp(char *envp, t_minishell **mnsh)
 {
 	t_envp	*temp;
 	t_envp	*undsc_temp;
-	
+
 	if (ft_strchr(envp, '='))
 	{
 		temp = (*mnsh)->envp;
@@ -147,8 +147,8 @@ void	sort_print(t_envp *envp)
 			while (diff == 0 && temp->content[i] && temp->next->content[i])
 			{
 				diff = (temp->content[i] + ft_isdigit(temp->content[i]))
-						- (temp->next->content[i]
-						+ ft_isdigit(temp->next->content[i]));
+					- (temp->next->content[i]
+					+ ft_isdigit(temp->next->content[i]));
 				i++;
 			}
 			if (diff > 0)
@@ -178,26 +178,36 @@ void	sort_print(t_envp *envp)
 int	export(char **cmd, t_minishell **mnsh)
 {
 	t_envp	*var;
+	int		exit_code;
 	int		i;
 
+	var = NULL;
 	i = 1;
+	exit_code = 0;
 	if (!cmd[i])
 		sort_print((*mnsh)->envp);
 	while (cmd[i])
 	{
-		if (cmd[i][0] == '=')
-			printf("%s not found\n", (cmd[i] + 1));
-		if (!(ft_isalpha(cmd[1][0]) || cmd[1][0] == '_'))
-			printf("export: '%s': not a valid identifier\n", cmd[i]);
-		var = envp_exist(cmd[i], mnsh);
-		if (var)
+		if (cmd[i][0] == '=' || (!(ft_isalpha(cmd[i][0]) || cmd[i][0] == '_')))
 		{
-			free(var->content);
-			var->content = ft_strdup(cmd[i]);
+			if (cmd[i][0] == '=')
+				printf("%s not found\n", (cmd[i] + 1));
+			if (!(ft_isalpha(cmd[i][0]) || cmd[i][0] == '_'))
+				printf("export: '%s': not a valid identifier\n", cmd[i]);
+			exit_code = 1;
 		}
 		else
-			add_exp(cmd[i], mnsh);
+		{
+			var = envp_exist(cmd[i], mnsh);
+			if (var)
+			{
+				free(var->content);
+				var->content = ft_strdup(cmd[i]);
+			}
+			else
+				add_exp(cmd[i], mnsh);
+		}
 		i++;
 	}
-	return (0);
+	return (exit_code);
 }

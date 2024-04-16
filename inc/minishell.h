@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/10 20:25:44 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/16 16:24:03 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,10 @@ typedef struct s_envp
 
 typedef struct	s_minishell
 {
-    t_envp	*envp;
-	int		exit_sig;
-}			t_minishell;
+    t_envp			*envp;
+	int				exit_sig;
+	unsigned char	exit_code;
+}					t_minishell;
 
 typedef struct  s_signals
 {
@@ -90,6 +91,8 @@ typedef struct s_ast
 	struct s_ast	**children;
 }					t_ast;
 
+extern int g_sig_received;
+
 t_dls				*parse_token(char *input);
 t_dls				*ft_dlsnew(char *content, t_type type);
 void				ft_dlsadd_back(t_dls **lst, t_dls *new);
@@ -104,11 +107,11 @@ int	is_redir(char *str);
 //  cd
 int	cd(char **cmd, t_minishell **mnsh);
 //	echo
-int echo(char **cmd);
+int echo(char **cmd, unsigned char exit_code);
 //	env
 int	env(char **cmd, t_minishell *mnsh);
 //  exit
-int	mnsh_exit(t_minishell **mnsh);
+int	mnsh_exit(char **cmd, t_minishell **mnsh);
 //  export
 int export(char **cmd, t_minishell **mnsh);
 //	pwd
@@ -126,7 +129,7 @@ int excu_cmd(char **cmd, t_envp *envp);
 t_envp	*newenvp(char *var);
 void	init_mnsh(char **envp, t_minishell **mnsh);
 //  =========================   signals   =====================================
-int		eof_handler(t_minishell **mnsh);
+void	eof_handler(t_minishell **mnsh);
 void    init_sigs(t_signals *sigs);
 //  =========================   free   ========================================
 void	free_envp(t_envp **envp);
