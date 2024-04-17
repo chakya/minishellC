@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/17 08:07:07 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/17 10:00:12 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -357,7 +357,7 @@ int	proc_redir(t_dls *tokens)
 			fd = open(tokens->content, O_RDONLY);
 			if (fd < 0)
 			{
-				printf("File not exist or open failed");
+				printf("File1 not exist or open failed");
 				exit(0);
 			}
 			dup2(fd, STDIN_FILENO);
@@ -368,20 +368,21 @@ int	proc_redir(t_dls *tokens)
 		}
 		else if (type_flag == T_TRUNC)
 		{
-			fd = open(tokens->content, O_WRONLY);
+			fd = open(tokens->content, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			printf("%s %d", tokens->content, fd);
 			if (fd < 0)
 			{
-				printf("File not exist or open failed");
+				printf("File2 not exist or open failed");
 				exit(0);
 			}
 			dup2(fd, STDOUT_FILENO);
 		}
 		else if (type_flag == T_APPEND)
 		{
-			fd = open(tokens->content, O_APPEND);
+			fd = open(tokens->content, O_WRONLY | O_CREAT | O_APPEND, 0644);
 			if (fd < 0)
 			{
-				printf("File not exist or open failed");
+				printf("File3 not exist or open failed");
 				exit(0);
 			}
 			dup2(fd, STDOUT_FILENO);
