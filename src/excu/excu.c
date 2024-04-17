@@ -30,7 +30,7 @@ void	builtins(char **cmd, t_minishell **mnsh)
 	if (ft_strcmp(cmd[0], "cd") == 0)
 		(*mnsh)->exit_code = cd(cmd, mnsh);
 	else if (ft_strcmp(cmd[0], "echo") == 0)
-		(*mnsh)->exit_code = echo(cmd, (*mnsh)->exit_code);
+		(*mnsh)->exit_code = echo(cmd);
 	else if (ft_strcmp(cmd[0], "env") == 0)
 		(*mnsh)->exit_code = env(cmd, *mnsh);
 	else if (ft_strcmp(cmd[0], "exit") == 0)

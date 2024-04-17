@@ -210,24 +210,22 @@ char *get_dollar(char *str, char **envp)
 	return (str);
 }
 
-char **process_av(t_dls *tokens, char **envp)
+char **process_av(t_dls *tokens, t_minishell **mnsh)
 {
 	t_dls	*tmp;
 	char	**av;
 	char	*dollar_var;
-	//int		i;
 
 	tmp = tokens;
-	//i = 0;
 	while (tmp)
 	{
-		if (tmp->content[0] == '$')
+		if (tmp->content[0] == '$' && (ft_isalnum(tmp->content[1])
+			|| tmp->content[1] == '_' || tmp->content[1] == '?'))
 		{
-			dollar_var = get_dollar(tmp->content, envp);
+			dollar_var = get_val(tmp->content, mnsh);
 			free(tmp->content);
 			tmp->content = dollar_var;
 		}
-		//else if for * wild card
 		tmp = tmp->next;
 	}
 	av = parse_to_arg(tokens);
@@ -368,8 +366,8 @@ int execute_pipe(t_ast **children, t_minishell **mnst, char **envp, int first)
 int	execute_tokens(t_dls *tokens, t_minishell **mnst, char **envp)
 {
 	char	**av;
-
-	av = process_av(tokens, envp);
+	(void)envp;
+	av = process_av(tokens, mnst);
 	if (!av)
 		return (1);
 	excu(av, mnst);

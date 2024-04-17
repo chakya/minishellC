@@ -107,7 +107,7 @@ int	is_redir(char *str);
 //  cd
 int	cd(char **cmd, t_minishell **mnsh);
 //	echo
-int echo(char **cmd, unsigned char exit_code);
+int echo(char **cmd);
 //	env
 int	env(char **cmd, t_minishell *mnsh);
 //  exit
@@ -134,5 +134,7 @@ void    init_sigs(t_signals *sigs);
 //  =========================   free   ========================================
 void	free_envp(t_envp **envp);
 void    free_all(t_minishell **mnsh);
+//  =========================   parsing   =====================================
+char	*get_val(char *str, t_minishell **mnsh);
 
 #endif
