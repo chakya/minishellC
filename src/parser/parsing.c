@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/16 09:08:03 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/17 08:07:07 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ t_dls	*parse_token(char *input)
 	return (tokens);
 }
 
-char **parse_to_arg(t_dls *tokens)
+char	**parse_to_arg(t_dls *tokens)
 {
 	t_dls	*tmp;
 	char	**av;
@@ -184,7 +184,7 @@ char **parse_to_arg(t_dls *tokens)
 	return (av);
 }
 
-char *get_dollar(char *str, char **envp)
+char	*get_dollar(char *str, char **envp)
 {
 	int		i;
 	int		j;
@@ -210,12 +210,12 @@ char *get_dollar(char *str, char **envp)
 	return (str);
 }
 
-char **process_av(t_dls *tokens)
+char	**process_av(t_dls *tokens)
 {
-	// t_dls	*tmp;
 	char	**av;
-	// int		i;
 
+	// t_dls	*tmp;
+	// int		i;
 	// tmp = tokens;
 	// i = 0;
 	// while (tmp)
@@ -233,9 +233,9 @@ char **process_av(t_dls *tokens)
 	return (av);
 }
 
-int count_pipe(t_dls *tokens)
+int	count_pipe(t_dls *tokens)
 {
-	int count;
+	int	count;
 
 	count = 0;
 	while (tokens)
@@ -244,16 +244,14 @@ int count_pipe(t_dls *tokens)
 			count++;
 		tokens = tokens->next;
 	}
-
-	return count;
+	return (count);
 }
 
-t_dls *copy_prev(t_dls **tokens)
+t_dls	*copy_prev(t_dls **tokens)
 {
-	t_dls *temp;
+	t_dls	*temp;
 
 	temp = (*tokens)->prev;
-
 	if ((*tokens)->next)
 	{
 		*tokens = (*tokens)->next;
@@ -265,10 +263,10 @@ t_dls *copy_prev(t_dls **tokens)
 		*tokens = NULL;
 	while (temp->prev)
 		temp = temp->prev;
-	return temp;
+	return (temp);
 }
 
-t_dls *copy_next(t_dls **tokens)
+t_dls	*copy_next(t_dls **tokens)
 {
 	*tokens = (*tokens)->next;
 	free((*tokens)->prev);
@@ -280,17 +278,17 @@ t_type	check_redirect(t_dls *tokens)
 {
 	while (tokens)
 	{
-		if (tokens->type >= T_TRUNC)
+		if (tokens->type >= T_INPUT && tokens->type <= T_APPEND)
 			return (tokens->type);
 		tokens = tokens->next;
 	}
-	return T_CMD;
+	return (T_CMD);
 }
 
-t_ast **populate_children(t_dls *tokens, int count)
+t_ast	**populate_children(t_dls *tokens, int count)
 {
-	t_ast **children;
-	int i;
+	t_ast	**children;
+	int		i;
 
 	i = 0;
 	children = (t_ast **)malloc(sizeof(t_ast *) * (count + 2));
@@ -300,20 +298,20 @@ t_ast **populate_children(t_dls *tokens, int count)
 		{
 			children[i] = (t_ast *)malloc(sizeof(t_ast));
 			children[i]->tokens = copy_prev(&tokens);
-			children[i]->type = check_redirect(children[i]->tokens);
+			children[i]->type = T_CMD;
 			i++;
 		}
 		else
 			tokens = tokens->next;
 	}
 	children[i] = NULL;
-	return children;
+	return (children);
 }
 
-t_ast *parse_ast(t_dls *tokens)
+t_ast	*parse_ast(t_dls *tokens)
 {
-	t_ast *ast;
-	int	count;
+	t_ast	*ast;
+	int		count;
 
 	ast = (t_ast *)malloc(sizeof(t_ast));
 	if (!ast)
@@ -327,27 +325,71 @@ t_ast *parse_ast(t_dls *tokens)
 	else
 	{
 		ast->tokens = tokens;
-		ast->type = check_redirect(tokens);
+		ast->type = T_CMD;// check_redirect(tokens);
 	}
-	return ast;
+	return (ast);
 }
 
-// int	proc_redir(t_dls *tokens)
-// {
-// 	while (tokens)
-// 	{
-// 		if (ft_strcmp(tokens, "<") == 0)
-			
-// 		else if(ft_strcmp(tokens, "<<") == 0 )
-		
-// 		else if(ft_strcmp(tokens, ">") == 0)
-		
-// 		else if(ft_strcmp(tokens, ">>") == 0)
+char	*get_filename(t_dls *tokens)
+{
+	while (tokens->next || (tokens->next && is_redir(tokens->next->content)))
+	{
+		tokens = tokens->next;
+	}
+	return (tokens->content);
+}
 
-// 		tokens = tokens->next;
-// 	}
-// 	return (0);
-// }
+int	proc_redir(t_dls *tokens)
+{
+	int	fd;
+	t_type type_flag;
+
+	while (tokens)
+	{
+		if (tokens->type >= T_INPUT && tokens->type <= T_APPEND)
+		{
+			type_flag = tokens->type;
+			tokens = tokens->next;
+			continue ;
+		}
+		if (type_flag == T_INPUT)
+		{
+			fd = open(tokens->content, O_RDONLY);
+			if (fd < 0)
+			{
+				printf("File not exist or open failed");
+				exit(0);
+			}
+			dup2(fd, STDIN_FILENO);
+		}
+		else if (type_flag == T_HEREDOC)
+		{
+			exit(0);
+		}
+		else if (type_flag == T_TRUNC)
+		{
+			fd = open(tokens->content, O_WRONLY);
+			if (fd < 0)
+			{
+				printf("File not exist or open failed");
+				exit(0);
+			}
+			dup2(fd, STDOUT_FILENO);
+		}
+		else if (type_flag == T_APPEND)
+		{
+			fd = open(tokens->content, O_APPEND);
+			if (fd < 0)
+			{
+				printf("File not exist or open failed");
+				exit(0);
+			}
+			dup2(fd, STDOUT_FILENO);
+		}
+		tokens = tokens->next;
+	}
+	return (0);
+}
 
 int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 {
@@ -356,18 +398,18 @@ int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 	av = process_av(tokens);
 	if (!av)
 		return (1);
-	// proc_redir(tokens);
+	proc_redir(tokens);
 	excu(av, mnsh);
 	return (0);
 }
 
-int execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
+int	execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 {
-	int fd[2] = {0 , 0};
-	int id;
+	int	fd[2] = {0, 0};
+	int	id;
 
 	if (!*children)
-		return 1;
+		return (1);
 	if (children[1])
 		pipe(fd);
 	// ft_putnbr_fd(!!children[1],2);
@@ -387,7 +429,7 @@ int execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 			// printf("%d", opipe[0]);
 			// ft_putstr_fd((*children)->tokens->content, 2);
 			// ft_putnbr_fd(opipe[0], 2);
-			dup2(opipe[0], STDIN_FILENO);	
+			dup2(opipe[0], STDIN_FILENO);
 		}
 		// ft_putstr_fd((*children)->tokens->content, 2);
 		// if (!ft_strcmp((*children)->tokens->content,"cat"))
@@ -397,7 +439,7 @@ int execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 		// 	write(2, &i, 5);
 		// }
 		if (fd[0])
-		{			
+		{
 			close(fd[0]);
 			close(fd[1]);
 		}
@@ -422,12 +464,12 @@ int execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 	return (0);
 }
 
-int execute_ast(t_minishell **mnsh, int *opipe)
+int	execute_ast(t_minishell **mnsh, int *opipe)
 {
-	int id;
+	int	id;
 
 	if (!(*mnsh)->ast)
-		return 0;
+		return (0);
 	if ((*mnsh)->ast->type == T_PIPE)
 		execute_pipe((*mnsh)->ast->children, opipe, mnsh);
 	else if ((*mnsh)->ast->type == T_CMD)
@@ -440,5 +482,5 @@ int execute_ast(t_minishell **mnsh, int *opipe)
 			waitpid(id, NULL, 0);
 		}
 	}
-	return 1;
+	return (1);
 }

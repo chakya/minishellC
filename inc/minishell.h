@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/12 09:23:53 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/17 08:01:52 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ typedef enum s_type
 	T_CB,
 	T_OR,
 	T_AND,
-	T_TRUNC,
-	T_APPEND,
 	T_INPUT,
-	T_HEREDOC
+	T_HEREDOC,
+	T_TRUNC,
+	T_APPEND
 }					t_type;
 
 typedef struct s_dls
