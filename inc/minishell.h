@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/18 22:19:14 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/18 22:52:51 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ int						is_builtins(char **cmd);
 //  =========================   redirection   =================================
 //  get_path
 char					**get_path(t_envp *envp);
-void					excu_cmd(char **cmd, t_envp *envp);
+int						excu_cmd(char **cmd, t_envp *envp);
 //  =========================   initialization   ==============================
 t_envp					*newenvp(char *var);
 void					init_mnsh(char **envp, t_minishell **mnsh);
