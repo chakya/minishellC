@@ -26,58 +26,49 @@
 			  of the next command via a pipe
 */
 
+// int	main(int ac, char **av, char **envp)
+// {
+// 	(void)ac;
+// 	pid_t	id;
+// 	int		fd[2];
+// 	char	*cmd;
+// 	int		i;
+
+// 	pipe(fd);
+// 	id = fork();
+
+// 	if (id = 0)
+// 	{
+// 		// child process
+// 	}
+// 	else
+// 	{
+// 		// parent process
+// 	}
+// 	return (0);
+// }
+
 int	main(int ac, char **av, char **envp)
 {
 	(void)ac;
-	// pid_t	pid;
-	char	**path;
-	// int		fd[2];
+	pid_t	id;
+	int		fd[2];
 	char	*cmd;
 	int		i;
 
-	// if (pipe(fd) == -1)
-	// 	return (1);
-	path = get_path(envp);
-	// pid = fork();
+	pipe(fd);
+	id = fork();
 
-	// if (pid == 0)
-	// {
-	// 	i = 0;
-	// 	// Child process
-	// 	close(fd[0]);
-	// 	dup2(fd[1], 1);
-	// 	close(fd[1]);
-	// 	while (execve(path[i], av, envp) == -1)
-	// 		i++;
-	// 	printf("Child process\n");
-	// }
-	// else if (pid > 0)
-	// {
-	// 	i = 0;
-	// 	// Parent process
-	// 	close(fd[1]);
-	// 	dup2(fd[0], 0);
-	// 	close(fd[0]);
-	// 	while (execve(path[i], av, envp) == -1)
-	// 		i++;
-	// 	printf("Parent process\n");
-	// 	waitpid(pid, NULL, 0);
-	// }
-
-	i = 0;
-	cmd = ft_strjoin(path[i], av[1]);
-	while (execve(cmd, av + 2, envp) == -1)
+	if (av > 1)
 	{
-		free(cmd);
-		i++;
-		cmd = ft_strjoin(path[i], av[1]);
-	}
-	free(cmd);
-	i = 0;
-	while (path[i])
-	{
-		free(path[i]);
-		i++;
+		if (id = 0)
+		{
+			// child process
+		}
+		else
+		{
+			// parent process
+		}
 	}
 	return (0);
 }

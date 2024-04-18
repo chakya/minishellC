@@ -17,7 +17,7 @@ int	is_envar(char *str)
 	int	i;
 
 	i = 0;
-	while (str[i])
+	while (str[i] && str[i + 1])
 	{
 		if (str[i] == '$' && (ft_isalnum(str[i + 1]) || str[i + 1] == '_'))
 			return (1);
@@ -30,11 +30,14 @@ int	is_envar(char *str)
 
 char	*enval(char *var, t_envp *envp)
 {
-	while (ft_strncmp(var, envp->content, ft_strlen(var)) != 0)
+	while (envp && ft_strncmp(var, envp->content, ft_strlen(var)) != 0)
 	{
 		envp = envp->next;
 	}
-	return (envp->content + ft_strlen(var));
+	if (envp)
+		return (envp->content + ft_strlen(var));
+	else
+		return ("");
 }
 
 char	*get_enval(char *str, t_envp *envp)
@@ -45,7 +48,13 @@ char	*get_enval(char *str, t_envp *envp)
 	char	*var_val;
 
 	i = 0;
-	j = ft_strlen(str);
+	j = 1;
+	while (str[j])
+	{
+		if (!(ft_isalnum(str[j]) || str[j] == '_'))
+			break ;
+		j++;
+	}
 	name = malloc((j + 2) * sizeof(char));
 	if (name == NULL)
 		return (NULL);
@@ -61,35 +70,72 @@ char	*get_enval(char *str, t_envp *envp)
 	return (var_val);
 }
 
-char	*get_val(char *str, t_minishell **mnsh)
+// char	*parse_dollar(char *str, t_minishell **mnsh)
+// {
+// 	char	*temp;
+// 	char	*temp_res;
+// 	char	*res;
+// 	int		i;
+// 	int		j;
+
+// 	i = 0;
+// 	temp = malloc((ft_strlen(str) + 1) * sizeof(char));
+// 	res = NULL;
+// 	while (str[i])
+// 	{
+// 		j = 0;
+// 		while (!(str[i] == '$' && (ft_isalnum(str[i + 1]) || str[i + 1] == '_' || str[i + 1] == '?')))
+// 		{
+// 			temp[j] = str[i];
+// 			i++;
+// 			j++;
+// 		}
+// 		temp[j] = '\0';
+// 		if (str[i] == '$' && (ft_isalnum(str[i + 1]) || str[i + 1] == '_' || str[i + 1] == '?'))
+// 		{
+// 			i++;
+// 			if (ft_isalnum(str[i]) || str[i] == '_')
+// 			{
+// 				temp_res = ft_strdup(temp);
+// 				free(temp);
+// 				res = ft_strjoin(temp_res, get_enval(str + i, (*mnsh)->envp));
+// 				free(temp_res);
+// 				while ((ft_isalnum(str[i]) || str[i] == '_' || str[i] == '?'))
+// 				{
+// 					i++;
+// 				}
+// 			}
+// 			else if (str[i] == '?')
+// 			{
+// 				temp_res = ft_strdup(temp);
+// 				free(temp);
+// 				temp = ft_strjoin(temp_res, ft_itoa((*mnsh)->exit_code));
+// 				free(temp_res);
+// 				i++;
+// 			}
+// 			if (res == NULL)
+// 				res = ft_strdup(temp);
+// 			else
+// 			{
+// 				temp_res = ft_strdup(res);
+// 				free(res);
+// 				res = ft_strjoin(temp_res, temp);
+// 				free(temp);
+// 				free(temp_res);
+// 				temp = malloc((ft_strlen(str + i) + 1) * sizeof(char));
+// 			}
+// 		}
+// 	}
+// 	return (res);
+// }
+
+char	*parse_dollar(char *str, t_minishell **mnsh)
 {
 	char	*res;
 
 	if (ft_isalnum(str[1]) || str[1] == '_')
 		res = ft_strdup(get_enval(str + 1, (*mnsh)->envp));
 	else if (str[1] == '?')
-		res = ft_strdup(ft_itoa((*mnsh)->exit_code));
+		res = ft_strjoin(ft_itoa((*mnsh)->exit_code), str + 2);
 	return (res);
 }
-
-// void	put_envar(char *str, t_minishell **mnsh)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while (str[i])
-// 	{
-// 		if (str[i] == '$' && (ft_isalnum(str[i + 1]) || str[i + 1] == '_'))
-// 			put_enval(str, &i, (*mnsh)->envp);
-// 		else if (str[i] == '$' && str[i + 1] == '?')
-// 		{
-// 			printf("%d", (*mnsh)->exit_code);
-// 			i += 2;
-// 		}
-// 		else
-// 		{
-// 			ft_putchar_fd(str[i], 1);
-// 			i++;
-// 		}
-// 	}
-// }

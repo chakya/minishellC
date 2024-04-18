@@ -46,5 +46,7 @@ void	init_mnsh(char **envp, t_minishell **mnsh)
 	*mnsh = malloc(sizeof(t_minishell));
 	(*mnsh)->envp = init_envp(envp);
 	(*mnsh)->exit_sig = 0;
+	(*mnsh)->sgl_quote = 0;
+	(*mnsh)->dbl_quote = 0;
 	(*mnsh)->exit_code = 0;
 }

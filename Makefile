@@ -29,6 +29,8 @@ SRCS = \
 		src/builtins/builtins_utils.c \
 		src/excu/excu.c \
 		src/parser/parse_dollar.c \
+		src/parser/parse_quotes.c \
+		src/parser/parse_string.c \
 		src/parser/parsing.c \
 		src/lst/dls.c \
 		src/excu/excu_cmd.c
