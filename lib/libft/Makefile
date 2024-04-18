@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: dphang <marvin@42.fr>                      +#+  +:+       +#+         #
+#    By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/09 11:30:51 by dphang            #+#    #+#              #
-#    Updated: 2023/09/19 15:46:44 by dphang           ###   ########.fr        #
+#    Updated: 2024/04/10 19:35:39 by cwijaya          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,7 +73,7 @@ bonus: $(BOBJS)
 	ar rc $(NAME) $(BOBJS)
 
 %o: %c
-	${CC} ${CFLAGS} -c -o $@ $<
+	${CC} ${CFLAGS} -c -o $@ $< -g
 
 clean:
 	$(RM) $(OBJS) $(BOBJS)

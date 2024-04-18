@@ -6,7 +6,7 @@
 /*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 16:37:48 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/08 16:37:50 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/16 16:44:01 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ t_envp	*init_envp(char **envp)
 {
 	t_envp	*var;
 	t_envp	*temp;
-	int	i;
+	int		i;
 
 	i = 0;
 	var = newenvp(envp[i++]);
@@ -45,5 +45,8 @@ void	init_mnsh(char **envp, t_minishell **mnsh)
 {
 	*mnsh = malloc(sizeof(t_minishell));
 	(*mnsh)->envp = init_envp(envp);
-	(*mnsh)->exit_status = 0;
+	(*mnsh)->exit_sig = 0;
+	(*mnsh)->sgl_quote = 0;
+	(*mnsh)->dbl_quote = 0;
+	(*mnsh)->exit_code = 0;
 }

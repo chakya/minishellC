@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: dphang <dphang@student.42.fr>              +#+  +:+       +#+         #
+#    By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/05 22:26:43 by dphang            #+#    #+#              #
-#    Updated: 2024/04/11 14:55:51 by dphang           ###   ########.fr        #
+#    Updated: 2024/04/11 16:28:44 by cwijaya          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ SRCS = \
 		src/main.c \
 		src/free.c \
 		src/init.c \
+		src/signals.c \
 		src/builtins/cd.c \
 		src/builtins/echo.c \
 		src/builtins/env.c \
@@ -27,6 +28,11 @@ SRCS = \
 		src/builtins/pwd.c \
 		src/builtins/builtins_utils.c \
 		src/excu/excu.c \
+		src/parser/expand_dollar.c \
+		src/parser/parse_quotes.c \
+		src/parser/parse_string.c \
+		src/parser/parsing.c \
+		src/lst/dls.c \
 		src/excu/excu_cmd.c
 #		src/lst/dls.c \
 		src/parser/parsing.c \
@@ -39,10 +45,10 @@ all : $(NAME)
 
 $(NAME): $(OBJS)
 	@${MAKE} -C lib/libft
-	@${CC} ${CFLAGS} ${OBJS} ${LIBFT} -o ${NAME}
+	@${CC} ${CFLAGS} ${OBJS} ${LIBFT} -lreadline -o ${NAME} -g
 
 .c.o:
-	@${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
+	@${CC} ${CFLAGS} -c $< -o ${<:.c=.o} -g
 
 clean:
 	@$(RM) $(OBJS)
