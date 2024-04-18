@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/18 21:33:03 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/18 22:39:44 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,27 +18,36 @@ int	is_delim(char *c)
 		|| *c == '(' || *c == ')' || *c == '\0' || !ft_strncmp(c, "&&", 2));
 }
 
+int	ft_isspace(char c)
+{
+	return (c == ' ' || c == '\t');
+}
+
 int	loop_quote(char *c)
 {
 	int		i;
+	int		is_closed;
 	char	quote;
 
 	quote = *c;
 	(c)++;
 	i = 1;
+	is_closed = 0;
 	while (*c)
 	{
 		i++;
-		if (*c == quote)
-			return (i);
+		if (*c == quote && !is_closed)
+			is_closed = 1;
+		else if ((*c == '\'' || *c == '"') && is_closed)
+		{
+			is_closed = 0;
+			quote = *c;
+		}
 		(c)++;
+		if (ft_isspace(*c) && is_closed)
+			return (i);
 	}
-	return (0);
-}
-
-int	ft_isspace(char c)
-{
-	return (c == ' ' || c == '\t');
+	return (i);
 }
 
 int	ft_isoperation(char *str)
@@ -121,8 +130,8 @@ t_dls	*tokenize_param(char **input)
 	if (**input == '"' || **input == '\'')
 	{
 		l = loop_quote(*input);
-		if (l <= 0)
-			printf("quote not closed");
+		// if (l <= 0)
+		// 	printf("quote not closed");
 	}
 	else
 	{
@@ -184,54 +193,55 @@ char	**parse_to_arg(t_dls *tokens)
 	return (av);
 }
 
-char	*get_dollar(char *str, char **envp)
-{
-	int		i;
-	int		j;
-	char	*var;
-	int		varlen;
+// char *get_dollar(char *str, char **envp)
+// {
+// 	int		i;
+// 	int		j;
+// 	char	*var;
+// 	int		varlen;
 
-	j = 1;
-	while (str[j] && !ft_isspace(str[j]) && !is_delim(&str[j]))
-		j++;
-	var = ft_strndup(str + 1, j - 1);
-	varlen = ft_strlen(var);
-	i = 0;
-	while (envp[i])
-	{
-		if (!ft_strncmp(envp[i], var, varlen))
-		{
-			free(var);
-			return (ft_strdup(envp[i] + varlen + 1));
-		}
-		i++;
-	}
-	free(var);
-	return (str);
-}
+// 	j = 1;
+// 	while (str[j] && !ft_isspace(str[j]) && !is_delim(&str[j]))
+// 		j++;
+// 	var = ft_strndup(str + 1, j - 1);
+// 	varlen = ft_strlen(var);
+// 	i = 0;
+// 	while (envp[i])
+// 	{
+// 		if (!ft_strncmp(envp[i], var, varlen))
+// 		{
+// 			free(var);
+// 			return (ft_strdup(envp[i] + varlen + 1));
+// 		}
+// 		i++;
+// 	}
+// 	free(var);
+// 	return (str);
+// }
 
-char	**process_av(t_dls *tokens)
+char **process_av(t_dls *tokens, t_minishell **mnsh)
 {
+	t_dls	*tmp;
 	char	**av;
+	char	*dollar_var;
 
-	// t_dls	*tmp;
-	// int		i;
-	// tmp = tokens;
-	// i = 0;
-	// while (tmp)
-	// {
-	// 	if (tmp->content[0] == '$')
-	// 	{
-	// 		dollar_var = get_dollar(tmp->content, envp);
-	// 		free(tmp->content);
-	// 		tmp->content = dollar_var;
-	// 	}
-	// 	//else if for * wild card
-	// 	tmp = tmp->next;
-	// }
+	tmp = tokens;
+	while (tmp)
+	{
+		if (ft_strchr(tmp->content, '\'') || ft_strchr(tmp->content, '\"')
+			|| envar_exist(tmp->content))
+		{
+			dollar_var = parse_string(tmp->content, mnsh);
+			//parse_dollar(tmp->content, mnsh);
+			free(tmp->content);
+			tmp->content = dollar_var;
+		}
+		tmp = tmp->next;
+	}
 	av = parse_to_arg(tokens);
 	return (av);
 }
+
 
 int	count_pipe(t_dls *tokens)
 {
@@ -503,11 +513,11 @@ int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 	char	**av;
 
 	proc_redir(tokens);
-	av = process_av(tokens);
+	av = process_av(tokens, mnsh);
 	if (!av)
-		return (1);
+		exit(0);
 	excu(av, mnsh);
-	exit(0);
+	return (0);
 }
 
 int	execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)

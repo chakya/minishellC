@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 17:25:39 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/11 17:07:07 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/18 22:45:58 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,17 +50,16 @@ void excu_cmd(char **cmd, t_envp *envp)
 	path = get_path(envp);
 	i = 0;
 	excu_cmd = ft_strjoin(path[i], cmd[0]);
-	while (path[i] && execve(excu_cmd, cmd, NULL) == -1)
+	while (path[i] && path[i+1] && execve(excu_cmd, cmd, NULL) == -1)
 	{
 		free(excu_cmd);
 		i++;
-		if (path[i])
-			excu_cmd = ft_strjoin(path[i], cmd[0]);
-		else
-			excu_cmd = NULL;
+		excu_cmd = ft_strjoin(path[i], cmd[0]);
 	}
 	if (excu_cmd)
 		free(excu_cmd);
+	else
+		printf("%s: command not found\n", cmd[0]);
 	i = 0;
 	while (path[i])
 	{
