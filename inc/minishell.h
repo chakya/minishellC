@@ -138,8 +138,10 @@ void	free_envp(t_envp **envp);
 void	free_all(t_minishell **mnsh);
 //  =========================   parsing   =====================================
 //	parse_dollar
-char	*parse_dollar(char *str, t_minishell **mnsh);
 int		envar_exist(char *str);
+int		is_envar(char *str);
+char	*expand_dollar(char *str, t_minishell **mnsh);
+void	apnd_expsn(char **temp, char *str, t_minishell **mnsh, int *j);
 //	parse_string
 char	*parse_string(char *str, t_minishell **mnsh);
 

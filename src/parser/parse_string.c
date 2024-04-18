@@ -22,6 +22,9 @@ char	*parse_string(char *str, t_minishell **mnsh)
 	i = 0;
 	j = 0;
 	temp = malloc((ft_strlen(str) + 1) * sizeof(char));
+	if (!temp)
+		return (NULL);
+	temp[0] = '\0';
 	while (str[i])
 	{
 		if (str[i] == '\'')
@@ -40,24 +43,57 @@ char	*parse_string(char *str, t_minishell **mnsh)
 				i++;
 			}
 		}
-		else if (str[i] == '\"')
+		else if (str[i] == '"')
 		{
 			i++;
 			(*mnsh)->dbl_quote = 1;
-			while (str[i] && str[i] != '\"')
+			while (str[i] && str[i] != '"')
 			{
 				// check for envar
-				temp[j] = str[i];
-				j++;
-				i++;
+				if (is_envar(str + i))
+				{
+					temp[j] = '\0';
+					apnd_expsn(&temp, str + i, mnsh, &j);
+					if (str[i + 1] == '?')
+						i += 2;
+					else
+					{
+						i++;
+						while (ft_isalnum(str[i]) || str[i] == '_')
+						{
+							i++;
+						}
+					}
+				}
+				else
+				{
+					temp[j] = str[i];
+					j++;
+					i++;
+				}
 			}
-			if (str[i] == '\"')
+			if (str[i] == '"')
 			{
 				(*mnsh)->dbl_quote = 0;
 				i++;
 			}
 		}
 		// add check for envar
+		else if (is_envar(str + i))
+		{
+			temp[j] = '\0';
+			apnd_expsn(&temp, str + i, mnsh, &j);
+			if (str[i + 1] == '?')
+				i += 2;
+			else
+			{
+				i++;
+				while (ft_isalnum(str[i]) || str[i] == '_')
+				{
+					i++;
+				}
+			}
+		}
 		else 
 		{
 			temp[j] = str[i];

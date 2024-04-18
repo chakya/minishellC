@@ -12,7 +12,7 @@
 
 #include "../../inc/minishell.h"
 
-int	is_envar(char *str)
+int	envar_exist(char *str)
 {
 	int	i;
 
@@ -25,6 +25,14 @@ int	is_envar(char *str)
 			return (2);
 		i++;
 	}
+	return (0);
+}
+
+int	is_envar(char *str)
+{
+	if (str[0] == '$' 
+		&& (ft_isalnum(str[1]) || str[1] == '_' || str[1] == '?'))
+		return (1);
 	return (0);
 }
 
@@ -129,13 +137,54 @@ char	*get_enval(char *str, t_envp *envp)
 // 	return (res);
 // }
 
-char	*parse_dollar(char *str, t_minishell **mnsh)
+char	*expand_dollar(char *str, t_minishell **mnsh)
 {
 	char	*res;
 
 	if (ft_isalnum(str[1]) || str[1] == '_')
 		res = ft_strdup(get_enval(str + 1, (*mnsh)->envp));
 	else if (str[1] == '?')
-		res = ft_strjoin(ft_itoa((*mnsh)->exit_code), str + 2);
+		res = ft_strdup(ft_itoa((*mnsh)->exit_code));
 	return (res);
+}
+
+void	join_expsn(char **dst, char *s1, char *s2)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (s1[i])
+	{
+		(*dst)[j] = s1[i];
+		i++;
+		j++;
+	}
+	i = 0;
+	while (s2[i])
+	{
+		(*dst)[j] = s2[i];
+		i++;
+		j++;
+	}
+	(*dst)[j] = '\0';
+}
+
+void	apnd_expsn(char **temp, char *str, t_minishell **mnsh, int *j)
+{
+	char	*temp_dup;
+	char	*temp_val;
+
+	temp_dup = ft_strdup(*temp);
+	temp_val = expand_dollar(str, mnsh);
+	printf("dup is: %s\nval is: %s\n", temp_dup, temp_val);
+	*j += ft_strlen(temp_val);
+	free(*temp);
+	*temp = malloc((ft_strlen(temp_dup) + ft_strlen(temp_val)
+		+ ft_strlen(str) + 1) * sizeof(char));
+	join_expsn(temp, temp_dup, temp_val);
+	// new_temp = ft_strjoin(temp_dup, temp_val); 
+	free(temp_dup);
+	free(temp_val);
 }
