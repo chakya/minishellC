@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/17 10:00:12 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/18 21:33:03 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,12 +255,16 @@ t_dls	*copy_prev(t_dls **tokens)
 	if ((*tokens)->next)
 	{
 		*tokens = (*tokens)->next;
+		free((*tokens)->prev->content);
 		free((*tokens)->prev);
 		(*tokens)->prev = NULL;
 		temp->next = NULL;
 	}
 	else
+	{
+		temp = *tokens;
 		*tokens = NULL;
+	}
 	while (temp->prev)
 		temp = temp->prev;
 	return (temp);
@@ -285,6 +289,74 @@ t_type	check_redirect(t_dls *tokens)
 	return (T_CMD);
 }
 
+int delim_check(char *hline, char*delim)
+{
+	while (*hline)
+	{
+		if (*delim == '\'' || *delim == '"')
+			delim++;
+		if (*delim == *hline)
+		{
+			hline++;
+			delim++;
+		}
+		else
+		{
+			return (0);
+		}
+	}
+	while (*delim)
+	{
+		if (*delim != '\'' && *delim != '"')
+			return (0);
+	}
+	return (1);
+
+}
+
+void check_heredoc(t_dls *tokens)
+{
+	char *delim;
+	char *hline;
+	int	fd[2];
+	int pid;
+
+	while(tokens)
+	{
+		if (tokens->type == T_HEREDOC)
+		{
+			if (!tokens->next)
+			{
+				perror("Syntax Error");
+				exit(2);
+			}
+			delim = tokens->next->content;
+			pipe(fd);
+			pid = fork();
+			if (!pid)
+			{
+				while (delim)
+				{
+					hline = readline("> ");
+					// if (!hline)
+					// 	break;
+					if (delim_check(hline, delim))
+						break;
+					ft_putstr_fd(hline, fd[1]);
+					ft_putstr_fd("\n", fd[1]);
+				}
+				close(fd[1]);
+				close(fd[0]);
+				exit(0);
+			}
+			close(fd[1]);
+			tokens->heredoc = fd[0];
+			waitpid(pid, NULL, 0);
+		}
+		tokens = tokens->next;
+	}
+}
+
 t_ast	**populate_children(t_dls *tokens, int count)
 {
 	t_ast	**children;
@@ -298,6 +370,7 @@ t_ast	**populate_children(t_dls *tokens, int count)
 		{
 			children[i] = (t_ast *)malloc(sizeof(t_ast));
 			children[i]->tokens = copy_prev(&tokens);
+			check_heredoc(children[i]->tokens);
 			children[i]->type = T_CMD;
 			i++;
 		}
@@ -325,6 +398,7 @@ t_ast	*parse_ast(t_dls *tokens)
 	else
 	{
 		ast->tokens = tokens;
+		check_heredoc(tokens);
 		ast->type = T_CMD;// check_redirect(tokens);
 	}
 	return (ast);
@@ -339,55 +413,87 @@ char	*get_filename(t_dls *tokens)
 	return (tokens->content);
 }
 
+void empty_string(t_dls *tokens)
+{
+	if (!tokens)
+		return ;
+	char *str=tokens->content;
+	while (*str)
+	{
+		*str = '\0';
+		str++;
+	}
+	tokens->type = T_EMPTY;
+}
+
+void rem2(t_dls *tokens)
+{
+	empty_string(tokens);
+	if (tokens->next)
+		empty_string(tokens->next);
+	else
+	{
+		printf("Invalid syntax");
+	}
+}
+
+int g_dupped[2];
+
 int	proc_redir(t_dls *tokens)
 {
-	int	fd;
-	t_type type_flag;
+	int		fd[2] = {-1, -1};
 
 	while (tokens)
 	{
-		if (tokens->type >= T_INPUT && tokens->type <= T_APPEND)
+		if (tokens->type == T_INPUT)
 		{
-			type_flag = tokens->type;
-			tokens = tokens->next;
-			continue ;
-		}
-		if (type_flag == T_INPUT)
-		{
-			fd = open(tokens->content, O_RDONLY);
-			if (fd < 0)
+			fd[0] = open(tokens->next->content, O_RDONLY);
+			if (fd[0] < 0)
 			{
 				printf("File1 not exist or open failed");
 				exit(0);
 			}
-			dup2(fd, STDIN_FILENO);
+			rem2(tokens);
 		}
-		else if (type_flag == T_HEREDOC)
+		else if (tokens->type == T_HEREDOC)
 		{
-			exit(0);
+			fd[0] = tokens->heredoc;
+			rem2(tokens);
 		}
-		else if (type_flag == T_TRUNC)
+		else if (tokens->type == T_TRUNC)
 		{
-			fd = open(tokens->content, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			printf("%s %d", tokens->content, fd);
-			if (fd < 0)
+			fd[1] = open(tokens->next->content, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			if (fd[1] < 0)
 			{
 				printf("File2 not exist or open failed");
 				exit(0);
 			}
-			dup2(fd, STDOUT_FILENO);
+			rem2(tokens);
 		}
-		else if (type_flag == T_APPEND)
+		else if (tokens->type == T_APPEND)
 		{
-			fd = open(tokens->content, O_WRONLY | O_CREAT | O_APPEND, 0644);
-			if (fd < 0)
+			fd[1] = open(tokens->next->content, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			if (fd[1] < 0)
 			{
 				printf("File3 not exist or open failed");
 				exit(0);
 			}
-			dup2(fd, STDOUT_FILENO);
+			rem2(tokens);
 		}
 		tokens = tokens->next;
+	}
+
+	g_dupped[0] = dup(STDIN_FILENO);
+	g_dupped[1] = dup(STDOUT_FILENO);
+	if (fd[0] > 2)
+	{
+		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
+	}
+	else if (fd[1] > 2)
+	{
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[1]);
 	}
 	return (0);
 }
@@ -396,12 +502,12 @@ int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 {
 	char	**av;
 
+	proc_redir(tokens);
 	av = process_av(tokens);
 	if (!av)
 		return (1);
-	proc_redir(tokens);
 	excu(av, mnsh);
-	return (0);
+	exit(0);
 }
 
 int	execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
@@ -413,32 +519,13 @@ int	execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 		return (1);
 	if (children[1])
 		pipe(fd);
-	// ft_putnbr_fd(!!children[1],2);
 	id = fork();
 	if (id == 0)
 	{
 		if (children[1])
-		{
-			// printf("%d", fd[1]);
-			// ft_putnbr_fd(fd[1], 2);
-			// ft_putnbr_fd(fd[1], 2);
 			dup2(fd[1], STDOUT_FILENO);
-			// ft_putstr_fd((*children)->tokens->content, 2);
-		}
 		if (opipe)
-		{
-			// printf("%d", opipe[0]);
-			// ft_putstr_fd((*children)->tokens->content, 2);
-			// ft_putnbr_fd(opipe[0], 2);
 			dup2(opipe[0], STDIN_FILENO);
-		}
-		// ft_putstr_fd((*children)->tokens->content, 2);
-		// if (!ft_strcmp((*children)->tokens->content,"cat"))
-		// {
-		// 	int i[5];
-		// 	read(STDIN_FILENO, &i, 5);
-		// 	write(2, &i, 5);
-		// }
 		if (fd[0])
 		{
 			close(fd[0]);
@@ -475,12 +562,21 @@ int	execute_ast(t_minishell **mnsh, int *opipe)
 		execute_pipe((*mnsh)->ast->children, opipe, mnsh);
 	else if ((*mnsh)->ast->type == T_CMD)
 	{
-		id = fork();
-		if (id == 0)
+		if (is_builtins(&(*mnsh)->ast->tokens->content))
+		{
 			execute_tokens((*mnsh)->ast->tokens, mnsh);
+			dup2(g_dupped[0], STDIN_FILENO);
+			dup2(g_dupped[1], STDOUT_FILENO);
+		}
 		else
 		{
-			waitpid(id, NULL, 0);
+			id = fork();
+			if (id == 0)
+				execute_tokens((*mnsh)->ast->tokens, mnsh);
+			else
+			{
+				waitpid(id, NULL, 0);
+			}
 		}
 	}
 	return (1);

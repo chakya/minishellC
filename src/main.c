@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 09:06:01 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/16 19:27:22 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/18 21:24:51 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ int	main(int ac, char **av, char **envp)
 	exit_sig = 0;
 	while (!exit_sig)
 	{
-		input = readline("$ ");
+		input = readline("MiniDillon 🦊 ");
 		add_history(input);
 		if (!input)
 			return (1);
