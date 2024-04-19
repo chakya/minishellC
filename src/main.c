@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 09:06:01 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/18 22:03:32 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/18 23:05:06 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,11 @@ int	main(int ac, char **av, char **envp)
 	while (!mnsh->exit_sig)
 	{
 		input = readline("MiniDillon 🦊 ");
-		add_history(input);
 		if (!input)
 			eof_handler(&mnsh);
+		if (input[0] == '\0')
+			continue;
+		add_history(input);
 		if (g_sig_received == 1)
 		{
 			mnsh->exit_code = 130;
