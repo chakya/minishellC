@@ -41,34 +41,122 @@ char	**get_path(t_envp *envp)
     return (path);
 }
 
-int excu_cmd(char **cmd, t_envp *envp)
+int	is_executable(char *cmd)
+{
+	struct stat	buf;
+
+	if (stat(cmd, &buf) == -1)
+	{
+		printf("%s: No such file or directory\n", cmd);
+		return (127);
+	}
+	if (S_ISDIR(buf.st_mode))
+	{
+		printf("%s: Is a directory\n", cmd);
+		return (126);
+	}
+	if (access(cmd, X_OK) == -1)
+	{
+		printf("%s: Permission denied\n", cmd);
+		return (126);
+	}
+	return (0);
+}
+
+int	envp_size(t_envp *envp)
+{
+	int		size;
+	t_envp	*temp;
+
+	size = 0;
+	temp = envp;
+	while (temp)
+	{
+		size++;
+		temp = temp->next;
+	}
+	return (size);
+}
+
+char	**dup_envparr(t_envp *envp)
+{
+	t_envp	*temp;
+	char	**envp_arr;
+	int		i;
+
+	i = 0;
+	temp = envp;
+	envp_arr = (char **)malloc((envp_size(envp) + 1) * sizeof(char *));
+	if (!envp_arr)
+		return (NULL);
+	while (temp)
+	{
+		envp_arr[i] = ft_strdup(temp->content);
+		temp = temp->next;
+		i++;
+	}
+	envp_arr[i] = '\0';
+	return (envp_arr);
+}
+
+void	free_arr(char **arr)
+{
+	int	i;
+
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
+}
+
+void excu_cmd(char **cmd, t_minishell **mnsh)
 {
     char	**path;
 	char	*excu_cmd;
+	int		exit_code;
 	int		i;
+	char	**envp;
 
-	path = get_path(envp);
-	i = 0;
-	excu_cmd = ft_strjoin(path[i], cmd[0]);
-	while (path[i] && execve(excu_cmd, cmd, NULL) == -1)
+	envp = dup_envparr((*mnsh)->envp);
+	exit_code = 0;
+	//to run scripts #!/bin/bash is needed (why?)
+	if (ft_strchr(cmd[0], '/'))
 	{
-		free(excu_cmd);
-		i++;
-		if (path[i])
-			excu_cmd = ft_strjoin(path[i], cmd[0]);
-		else
-			excu_cmd = NULL;
+		if (execve(cmd[0], cmd, envp) == -1)
+			exit_code = is_executable(cmd[0]);
 	}
-	if (excu_cmd)
-		free(excu_cmd);
 	else
-		printf("%s: command not found\n", cmd[0]);
-	i = 0;
-	while (path[i])
 	{
-		free(path[i]);
-		i++;
+		path = get_path((*mnsh)->envp);
+		i = 0;
+		excu_cmd = ft_strjoin(path[i], cmd[0]);
+		while (path[i] && execve(excu_cmd, cmd, envp) == -1)
+		{
+			free(excu_cmd);
+			i++;
+			if (path[i])
+				excu_cmd = ft_strjoin(path[i], cmd[0]);
+			else
+				excu_cmd = NULL;
+		}
+		if (excu_cmd)
+			free(excu_cmd);
+		else
+		{
+			exit_code = 127;
+			printf("%s: command not found\n", cmd[0]);
+		}
+		i = 0;
+		while (path[i])
+		{
+			free(path[i]);
+			i++;
+		}
+		free(path);
+		free_arr(envp);
 	}
-    free(path);
-	return (0);
+	exit(exit_code);
 }

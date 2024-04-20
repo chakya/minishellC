@@ -49,4 +49,6 @@ void	init_mnsh(char **envp, t_minishell **mnsh)
 	(*mnsh)->sgl_quote = 0;
 	(*mnsh)->dbl_quote = 0;
 	(*mnsh)->exit_code = 0;
+	(*mnsh)->ast = NULL;
+	(*mnsh)->opipe = NULL;
 }

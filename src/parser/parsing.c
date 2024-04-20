@@ -554,7 +554,7 @@ int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 	av = process_av(tokens, mnsh);
 	if (!av)
 		exit(0);
-	excu(av, mnsh);
+	(*mnsh)->exit_code = excu(av, mnsh);
 	return (0);
 }
 
@@ -603,6 +603,7 @@ int	execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 int	execute_ast(t_minishell **mnsh, int *opipe)
 {
 	int	id;
+	int	exit_status;
 
 	if (!(*mnsh)->ast)
 		return (0);
@@ -623,7 +624,9 @@ int	execute_ast(t_minishell **mnsh, int *opipe)
 				execute_tokens((*mnsh)->ast->tokens, mnsh);
 			else
 			{
-				waitpid(id, NULL, 0);
+				waitpid(id, &exit_status, 0);
+				if (WIFEXITED(exit_status))
+					(*mnsh)->exit_code = WEXITSTATUS(exit_status);
 			}
 		}
 	}
