@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 14:02:40 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/18 22:34:52 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/21 20:23:47 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,7 +208,8 @@ int	export(char **cmd, t_minishell **mnsh)
 	{
 		if (!is_validenvar(cmd[i]))
 		{
-			printf("export: '%s': not a valid identifier\n", cmd[i]);
+			if (!(ft_isalpha(cmd[i][0]) || cmd[i][0] == '_'))
+				printf("export: '%s': not a valid identifier\n", cmd[i]);
 			exit_code = 1;
 		}
 		else
