@@ -39,18 +39,20 @@ t_envp	*envp_exist(char *envp, t_minishell **mnsh)
 void	add_exp(char *envp, t_minishell **mnsh)
 {
 	t_envp	*temp;
-	t_envp	*undsc_temp;
 
 	if (ft_strchr(envp, '='))
 	{
-		temp = (*mnsh)->envp;
-		while (ft_strncmp(temp->next->content, "_=", 2) != 0)
+		if (!(*mnsh)->envp)
+			(*mnsh)->envp = newenvp(envp);
+		else
 		{
-			temp = temp->next;
+			temp = (*mnsh)->envp;
+			while (temp->next)
+			{
+				temp = temp->next;
+			}
+			temp->next = newenvp(envp);
 		}
-		undsc_temp = temp->next;
-		temp->next = newenvp(envp);
-		temp->next->next = undsc_temp;
 	}
 }
 
@@ -190,8 +192,6 @@ int	export(char **cmd, t_minishell **mnsh)
 	{
 		if (cmd[i][0] == '=' || (!(ft_isalpha(cmd[i][0]) || cmd[i][0] == '_')))
 		{
-			if (cmd[i][0] == '=')
-				printf("%s not found\n", (cmd[i] + 1));
 			if (!(ft_isalpha(cmd[i][0]) || cmd[i][0] == '_'))
 				printf("export: '%s': not a valid identifier\n", cmd[i]);
 			exit_code = 1;
