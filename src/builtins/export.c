@@ -221,7 +221,7 @@ int	export(char **cmd, t_minishell **mnsh)
 	exit_code = 0;
 	if (!cmd[i] || cmd[i][0] == '#')
 		sort_print((*mnsh)->envp);
-	while (cmd[i] && cmd[1][0] != '#')
+	while (cmd[i] && cmd[i][0] != '#')
 	{
 		if (!is_validenvar(cmd[i]))
 		{
