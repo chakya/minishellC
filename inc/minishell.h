@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/21 05:56:02 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/21 20:33:26 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ typedef struct s_minishell
 	int					sgl_quote;
 	int					dbl_quote;
 	unsigned char		exit_code;
+	int					is_child;
 	t_ast				*ast;
 	int					*opipe;
 }						t_minishell;
@@ -99,7 +100,7 @@ int						execute(t_dls *tokens, char **envp);
 t_ast					*parse_ast(t_dls *tokens);
 int						execute_ast(t_minishell **mnst, int *opipe);
 void free_ast(t_ast *ast);
-
+void	sigint_handler(int sig);
 //	=========================   built-ins   ===================================
 //	builtins_utils
 int						ft_strcmp(const char *s1, const char *s2);
@@ -125,7 +126,7 @@ int						is_builtins(char **cmd);
 //  =========================   redirection   =================================
 //  get_path
 char					**get_path(t_envp *envp);
-void						excu_cmd(char **cmd, t_minishell **mnsh);	
+void						excu_cmd(char **cmd, t_minishell **mnsh);
 //  =========================   initialization   ==============================
 t_envp					*newenvp(char *var);
 void					init_mnsh(char **envp, t_minishell **mnsh);

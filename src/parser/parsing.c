@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/21 20:31:05 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/21 20:33:09 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -664,9 +664,9 @@ int	execute_ast(t_minishell **mnsh, int *opipe)
 			id = fork();
 			if (id == 0)
 			{
-				signal(SIGINT, interupt_handler);
+				(*mnsh)->is_child = 1;
+				signal(SIGINT, SIG_IGN);
 				execute_tokens((*mnsh)->ast->tokens, mnsh);
-				exit(0);
 			}
 			else
 			{

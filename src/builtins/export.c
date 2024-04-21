@@ -80,7 +80,7 @@ char	*enclose_val(char *envp)
 			res[j++] = envp[i++];
 	}
 	res[j] = '"';
-	res[j + 1] ='\0';
+	res[j + 1] = '\0';
 	return (res);
 }
 
@@ -185,13 +185,13 @@ int	is_validenvar(char *envp)
 	i = 0;
 	if (envp[i] == '=' || ft_isdigit(envp[i]))
 		return (0);
-	while (envp[i] && (ft_isalnum(envp[i]) || envp[i] == '_'))
+	while (envp[i] && envp[i] != '=')
 	{
+		if (!(ft_isalnum(envp[i]) || envp[i] == '_'))
+			return (0);
 		i++;
-		if (envp[i] == '=')
-			return (1);
 	}
-	return (0);
+	return (1);
 }
 
 int	is_validenvar(char *envp)
@@ -225,19 +225,25 @@ int	export(char **cmd, t_minishell **mnsh)
 	{
 		if (!is_validenvar(cmd[i]))
 		{
-			printf("export: '%s': not a valid identifier\n", cmd[i]);
+			//printf("export: '%s': not a valid identifier\n", cmd[i]);
+			//perror(" not a valid identifier\n");
+			printf("export: '%s'", cmd[i]);
+			ft_putstr_fd(" not a valid identifier\n", 2);
 			exit_code = 1;
 		}
 		else
 		{
-			var = envp_exist(cmd[i], mnsh);
-			if (var)
+			if (ft_strchr(cmd[i], '='))
 			{
-				free(var->content);
-				var->content = ft_strdup(cmd[i]);
+				var = envp_exist(cmd[i], mnsh);
+				if (var)
+				{
+					free(var->content);
+					var->content = ft_strdup(cmd[i]);
+				}
+				else
+					add_exp(cmd[i], mnsh);
 			}
-			else
-				add_exp(cmd[i], mnsh);
 		}
 		i++;
 	}

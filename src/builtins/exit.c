@@ -17,6 +17,8 @@ int	is_numeric(char *str)
 	int	i;
 
 	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
 	while (str[i])
 	{
 		if (!ft_isdigit(str[i]))
@@ -34,12 +36,14 @@ int	mnsh_exit(char **cmd, t_minishell **mnsh)
 	{
 		if (cmd[1] && !is_numeric(cmd[1]))
 		{
-			printf("exit: %s: numeric argument required\n", cmd[1]);
+			printf("exit: %s:", cmd[1]);
+			ft_putstr_fd(" numeric argument required\n", 2);
 			return (2);
 		}
 		else if (cmd[1] && cmd[2])
 		{
-			printf("exit: too many arguments\n");
+			printf("exit: ");
+			ft_putstr_fd(" too many arguments\n", 2);
 			return (1);
 		}
 		else if (cmd[1] && is_numeric(cmd[1]))
