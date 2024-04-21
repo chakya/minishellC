@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/18 22:52:51 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/21 05:56:02 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ void					ft_dlsadd_back(t_dls **lst, t_dls *new);
 int						execute(t_dls *tokens, char **envp);
 t_ast					*parse_ast(t_dls *tokens);
 int						execute_ast(t_minishell **mnst, int *opipe);
+void free_ast(t_ast *ast);
 
 //	=========================   built-ins   ===================================
 //	builtins_utils

@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/18 22:39:44 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/21 07:13:05 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,34 @@ t_dls	*tokenize_param(char **input)
 	return (token);
 }
 
+void free_tokens(t_dls *tokens)
+{
+	t_dls *temp;
+
+	while (tokens)
+	{
+		temp = tokens;
+		tokens = tokens->next;
+		free(temp->content);
+		free(temp);
+	}
+}
+
+void free_ast(t_ast *ast)
+{
+	if (ast->type == T_PIPE)
+	{
+		int i = 0;
+		while (ast->children[i])
+		{
+			free_ast(ast->children[i]);
+			i++;
+		}
+	}
+	free_tokens(ast->tokens);
+	free(ast);
+}
+
 t_dls	*parse_token(char *input)
 {
 	t_dls	*tokens;
@@ -156,6 +184,8 @@ t_dls	*parse_token(char *input)
 			token = tokenize_operation(&input);
 		else
 			token = tokenize_param(&input);
+		if(!token)
+			free_tokens(tokens);
 		ft_dlsadd_back(&tokens, token);
 	}
 	return (tokens);
@@ -391,12 +421,20 @@ t_ast	**populate_children(t_dls *tokens, int count)
 	return (children);
 }
 
+void	init_ast(t_ast *ast)
+{
+	ast->type = T_INVALID;
+	ast->tokens = NULL;
+	ast->children = NULL;
+}
+
 t_ast	*parse_ast(t_dls *tokens)
 {
 	t_ast	*ast;
 	int		count;
 
 	ast = (t_ast *)malloc(sizeof(t_ast));
+	init_ast(ast);
 	if (!ast)
 		return (NULL);
 	count = count_pipe(tokens);
@@ -589,5 +627,7 @@ int	execute_ast(t_minishell **mnsh, int *opipe)
 			}
 		}
 	}
+	free_ast((*mnsh)->ast);
+	(*mnsh)->ast = NULL;
 	return (1);
 }
