@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/21 07:13:05 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/21 20:11:53 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,15 +127,11 @@ t_dls	*tokenize_param(char **input)
 	int		l;
 
 	l = 0;
-	if (**input == '"' || **input == '\'')
+	while (!is_delim((*input) + l))
 	{
-		l = loop_quote(*input);
-		// if (l <= 0)
-		// 	printf("quote not closed");
-	}
-	else
-	{
-		while (!is_delim((*input) + l))
+		if ((*input)[l] == '"' || (*input)[l] == '\'')
+			l += loop_quote(*input);
+		else
 			l++;
 	}
 	token = ft_dlsnew(ft_strndup(*input, l), T_ARG);
@@ -187,6 +183,14 @@ t_dls	*parse_token(char *input)
 		if(!token)
 			free_tokens(tokens);
 		ft_dlsadd_back(&tokens, token);
+		if (token->type == T_PIPE && token->prev && token->prev->type >= T_INPUT)
+			break;
+	}
+	if(tokens && (token->type == T_PIPE || token->type >= T_INPUT))
+	{
+		ft_putstr_fd("Syntax Error\n", 2);
+		free_tokens(tokens);
+		tokens = NULL;
 	}
 	return (tokens);
 }
@@ -205,6 +209,8 @@ char	**parse_to_arg(t_dls *tokens)
 			i++;
 		tmp = tmp->next;
 	}
+	if (i == 0)
+		return (NULL);
 	av = (char **)malloc((i + 1) * sizeof(char *));
 	if (!av)
 		return (0);
@@ -354,6 +360,16 @@ int delim_check(char *hline, char*delim)
 
 }
 
+void interupt_handler(int signum)
+{
+	if (signum == SIGINT)
+	{
+		ft_putstr_fd("\n", 1);
+		g_sig_received = 1;
+		exit(130);
+	}
+}
+
 void check_heredoc(t_dls *tokens)
 {
 	char *delim;
@@ -375,6 +391,7 @@ void check_heredoc(t_dls *tokens)
 			pid = fork();
 			if (!pid)
 			{
+				signal(SIGINT, interupt_handler);
 				while (delim)
 				{
 					hline = readline("> ");
@@ -384,6 +401,7 @@ void check_heredoc(t_dls *tokens)
 						break;
 					ft_putstr_fd(hline, fd[1]);
 					ft_putstr_fd("\n", fd[1]);
+					free(hline);
 				}
 				close(fd[1]);
 				close(fd[0]);
@@ -498,8 +516,8 @@ int	proc_redir(t_dls *tokens)
 			fd[0] = open(tokens->next->content, O_RDONLY);
 			if (fd[0] < 0)
 			{
-				printf("File1 not exist or open failed");
-				exit(0);
+				ft_putstr_fd(" No such file or directory\n", 2);
+				exit(1);
 			}
 			rem2(tokens);
 		}
@@ -513,8 +531,8 @@ int	proc_redir(t_dls *tokens)
 			fd[1] = open(tokens->next->content, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			if (fd[1] < 0)
 			{
-				printf("File2 not exist or open failed");
-				exit(0);
+				ft_putstr_fd(" Permission denied\n", 2);
+				exit(1);
 			}
 			rem2(tokens);
 		}
@@ -523,8 +541,8 @@ int	proc_redir(t_dls *tokens)
 			fd[1] = open(tokens->next->content, O_WRONLY | O_CREAT | O_APPEND, 0644);
 			if (fd[1] < 0)
 			{
-				printf("File3 not exist or open failed");
-				exit(0);
+				ft_putstr_fd(" Permission denied\n", 2);
+				exit(1);
 			}
 			rem2(tokens);
 		}
@@ -546,6 +564,19 @@ int	proc_redir(t_dls *tokens)
 	return (0);
 }
 
+void free_av(char **av)
+{
+	int	i;
+
+	i = 0;
+	while (av[i])
+	{
+		free(av[i]);
+		i++;
+	}
+	free(av);
+}
+
 int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 {
 	char	**av;
@@ -553,8 +584,9 @@ int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 	proc_redir(tokens);
 	av = process_av(tokens, mnsh);
 	if (!av)
-		exit(0);
+		return (0);
 	(*mnsh)->exit_code = excu(av, mnsh);
+	free_av(av);
 	return (0);
 }
 
@@ -600,6 +632,16 @@ int	execute_pipe(t_ast **children, int *opipe, t_minishell **mnsh)
 	return (0);
 }
 
+void handler(int signum)
+{
+	if (signum == SIGINT)
+	{
+		g_sig_received = 1;
+		ft_putstr_fd("\n", 1);
+		exit(0);
+	}
+}
+
 int	execute_ast(t_minishell **mnsh, int *opipe)
 {
 	int	id;
@@ -621,7 +663,11 @@ int	execute_ast(t_minishell **mnsh, int *opipe)
 		{
 			id = fork();
 			if (id == 0)
+			{
+				signal(SIGINT, interupt_handler);
 				execute_tokens((*mnsh)->ast->tokens, mnsh);
+				exit(0);
+			}
 			else
 			{
 				waitpid(id, &exit_status, 0);

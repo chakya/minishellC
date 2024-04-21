@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 12:42:00 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/09 12:42:01 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/21 16:29:15 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,12 @@ void	free_envp(t_envp **envp)
         free(temp->content);
         free(temp);
 	}
+	*envp = NULL;
 }
 
 void    free_all(t_minishell **mnsh)
 {
     free_envp(&((*mnsh)->envp));
-    free(*mnsh);
+	free(*mnsh);
+	*mnsh = NULL;
 }

@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 17:25:39 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/18 22:51:51 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/21 17:52:32 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ char	**dup_envparr(t_envp *envp)
 		temp = temp->next;
 		i++;
 	}
-	envp_arr[i] = '\0';
+	envp_arr[i] = NULL;
 	return (envp_arr);
 }
 

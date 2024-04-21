@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 09:06:01 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/21 15:43:35 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/21 19:27:50 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	main(int ac, char **av, char **envp)
 	t_signals	sigs;
 	char		*input;
 	t_dls		*tokens;
+	int 		exit_code;
 
 	init_mnsh(envp, &mnsh);
 	init_sigs(&sigs);
@@ -52,9 +53,14 @@ int	main(int ac, char **av, char **envp)
 			g_sig_received = 0;
 		}
 		tokens = parse_token(input);
+		free(input);
+		if (!tokens)
+			continue ;
 		mnsh->ast = parse_ast(tokens);
 		execute_ast(&mnsh, NULL);
 	}
+	exit_code = mnsh->exit_code;
 	free_all(&mnsh);
-	return (mnsh->exit_code);
+	clear_history();
+	return (exit_code);
 }
