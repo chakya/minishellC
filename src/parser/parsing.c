@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/21 20:34:01 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/21 22:11:24 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ t_type	get_ops_type(char *ops)
 {
 	if (!ft_strncmp(ops, "||", 2))
 		return (T_OR);
+	else if (!ft_strncmp(ops, "&&", 2))
+		return (T_AND);
 	else if (!ft_strncmp(ops, ">>", 2))
 		return (T_APPEND);
 	else if (!ft_strncmp(ops, "<<", 2))
@@ -116,10 +118,7 @@ t_dls	*tokenize_operation(char **input)
 		(*input)++;
 	}
 	else
-		token = ft_dlsnew(ft_strndup(*input, 1), get_ops_type(*input));
-	(*input)++;
-	return (token);
-}
+		token = ft_dlsnew(ft_strndup(*input, 1), get_ops_type(*input));T_OR
 
 t_dls	*tokenize_param(char **input)
 {
@@ -134,6 +133,8 @@ t_dls	*tokenize_param(char **input)
 		else
 			l++;
 	}
+	if (l == 0)
+		return (NULL);
 	token = ft_dlsnew(ft_strndup(*input, l), T_ARG);
 	*input += l;
 	return (token);
@@ -173,22 +174,32 @@ t_dls	*parse_token(char *input)
 	t_dls	*token;
 
 	tokens = NULL;
+	ft_skipspaces(&input);
 	while (*input)
 	{
-		ft_skipspaces(&input);
 		if (get_ops_type(input))
 			token = tokenize_operation(&input);
 		else
 			token = tokenize_param(&input);
-		if(!token)
-			free_tokens(tokens);
 		ft_dlsadd_back(&tokens, token);
+		if(!tokens)
+		{
+			free_tokens(tokens);
+			return (NULL);
+		}
 		if (token->type == T_PIPE && token->prev && token->prev->type >= T_INPUT)
 			break;
+		ft_skipspaces(&input);
 	}
 	if(tokens && (token->type == T_PIPE || token->type >= T_INPUT))
 	{
 		ft_putstr_fd("Syntax Error\n", 2);
+		free_tokens(tokens);
+		tokens = NULL;
+	}
+	else if(tokens && (token->type >= T_COL && token->type <= T_AND))
+	{
+		ft_putstr_fd("Not supported\n", 2);
 		free_tokens(tokens);
 		tokens = NULL;
 	}
