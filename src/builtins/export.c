@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 14:02:40 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/21 20:32:48 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/21 20:35:06 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ t_envp	*envp_exist(char *envp, t_minishell **mnsh)
 void	add_exp(char *envp, t_minishell **mnsh)
 {
 	t_envp	*temp;
-	t_envp	*undsc_temp;
 
 	if (ft_strchr(envp, '='))
 	{
@@ -192,22 +191,6 @@ int	is_validenvar(char *envp)
 		i++;
 	}
 	return (1);
-}
-
-int	is_validenvar(char *envp)
-{
-	int	i;
-
-	i = 0;
-	if (envp[i] == '=' || ft_isdigit(envp[i]))
-		return (0);
-	while (envp[i] && (ft_isalnum(envp[i]) || envp[i] == '_'))
-	{
-		i++;
-		if (envp[i] == '=')
-			return (1);
-	}
-	return (0);
 }
 
 int	export(char **cmd, t_minishell **mnsh)
