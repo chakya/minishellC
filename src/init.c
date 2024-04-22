@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 16:37:48 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/16 16:44:01 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/22 16:25:21 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,6 @@ void	init_mnsh(char **envp, t_minishell **mnsh)
 	(*mnsh)->is_child = 0;
 	(*mnsh)->ast = NULL;
 	(*mnsh)->opipe = NULL;
+	(*mnsh)->io[0] = 0;
+	(*mnsh)->io[1] = 1;
 }

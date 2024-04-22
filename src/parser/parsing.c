@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/22 14:29:11 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/22 16:26:16 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -397,7 +397,7 @@ void check_heredoc(t_dls *tokens)
 		{
 			if (!tokens->next)
 			{
-				perror("Syntax Error");
+				ft_putstr_fd("Syntax Error",2);
 				exit(2);
 			}
 			delim = tokens->next->content;
@@ -517,9 +517,7 @@ void rem2(t_dls *tokens)
 	}
 }
 
-int g_dupped[2];
-
-int	proc_redir(t_dls *tokens)
+int	proc_redir(t_dls *tokens, t_minishell *mnsh)
 {
 	int		fd[2] = {-1, -1};
 
@@ -531,7 +529,7 @@ int	proc_redir(t_dls *tokens)
 			if (fd[0] < 0)
 			{
 				ft_putstr_fd(" No such file or directory\n", 2);
-				exit(1);
+				return (1);
 			}
 			rem2(tokens);
 		}
@@ -546,7 +544,7 @@ int	proc_redir(t_dls *tokens)
 			if (fd[1] < 0)
 			{
 				ft_putstr_fd(" Permission denied\n", 2);
-				exit(1);
+				return (1);
 			}
 			rem2(tokens);
 		}
@@ -556,15 +554,15 @@ int	proc_redir(t_dls *tokens)
 			if (fd[1] < 0)
 			{
 				ft_putstr_fd(" Permission denied\n", 2);
-				exit(1);
+				return (1);
 			}
 			rem2(tokens);
 		}
 		tokens = tokens->next;
 	}
 
-	g_dupped[0] = dup(STDIN_FILENO);
-	g_dupped[1] = dup(STDOUT_FILENO);
+	mnsh->io[0] = dup(STDIN_FILENO);
+	mnsh->io[1] = dup(STDOUT_FILENO);
 	if (fd[0] > 2)
 	{
 		dup2(fd[0], STDIN_FILENO);
@@ -595,7 +593,8 @@ int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 {
 	char	**av;
 
-	proc_redir(tokens);
+	if (proc_redir(tokens, *mnsh))
+		return (1);
 	av = process_av(tokens, mnsh);
 	if (!av)
 		return (0);
@@ -670,8 +669,8 @@ int	execute_ast(t_minishell **mnsh, int *opipe)
 		if (is_builtins(&(*mnsh)->ast->tokens->content))
 		{
 			execute_tokens((*mnsh)->ast->tokens, mnsh);
-			dup2(g_dupped[0], STDIN_FILENO);
-			dup2(g_dupped[1], STDOUT_FILENO);
+			dup2((*mnsh)->io[0], STDIN_FILENO);
+			dup2((*mnsh)->io[1], STDOUT_FILENO);
 		}
 		else
 		{
@@ -680,7 +679,9 @@ int	execute_ast(t_minishell **mnsh, int *opipe)
 			{
 				(*mnsh)->is_child = 1;
 				signal(SIGINT, SIG_IGN);
-				execute_tokens((*mnsh)->ast->tokens, mnsh);
+				if (execute_tokens((*mnsh)->ast->tokens, mnsh))
+					exit(1);
+				exit(0);
 			}
 			else
 			{

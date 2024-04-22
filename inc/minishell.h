@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/21 20:33:26 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/22 16:25:08 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ typedef struct s_minishell
 	int					is_child;
 	t_ast				*ast;
 	int					*opipe;
+	int					io[2];
 }						t_minishell;
 
 typedef struct s_signals
