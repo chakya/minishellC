@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/22 16:26:16 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/22 17:28:47 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,7 @@ char	**parse_to_arg(t_dls *tokens)
 	i = 0;
 	while (tmp)
 	{
-		if (tmp->type == T_ARG)
+		if (tmp->type == T_ARG && tmp->content[0] != '\0')
 			i++;
 		tmp = tmp->next;
 	}
@@ -232,7 +232,7 @@ char	**parse_to_arg(t_dls *tokens)
 	tmp = tokens;
 	while (tmp)
 	{
-		if (tmp->type == T_ARG)
+		if (tmp->type == T_ARG && tmp->content[0] != '\0')
 		{
 			av[i] = ft_strdup(tmp->content);
 			i++;
@@ -282,7 +282,6 @@ char **process_av(t_dls *tokens, t_minishell **mnsh)
 			|| envar_exist(tmp->content))
 		{
 			dollar_var = parse_string(tmp->content, mnsh);
-			//parse_dollar(tmp->content, mnsh);
 			free(tmp->content);
 			tmp->content = dollar_var;
 		}
@@ -374,17 +373,19 @@ int delim_check(char *hline, char*delim)
 
 }
 
-void interupt_handler(int signum)
+void	interupt_handler(int signum)
 {
 	if (signum == SIGINT)
 	{
-		ft_putstr_fd("\n", 1);
+		//ft_putstr_fd("\n", 1);
+		//rl_on_new_line();
+		sigint_handler(signum);
 		g_sig_received = 1;
 		exit(130);
 	}
 }
 
-void check_heredoc(t_dls *tokens)
+void	check_heredoc(t_dls *tokens)
 {
 	char *delim;
 	char *hline;
@@ -427,6 +428,8 @@ void check_heredoc(t_dls *tokens)
 		}
 		tokens = tokens->next;
 	}
+	if (g_sig_received)
+	{}
 }
 
 t_ast	**populate_children(t_dls *tokens, int count)
@@ -677,17 +680,19 @@ int	execute_ast(t_minishell **mnsh, int *opipe)
 			id = fork();
 			if (id == 0)
 			{
-				(*mnsh)->is_child = 1;
-				signal(SIGINT, SIG_IGN);
+				signal(SIGINT, SIG_DFL);
+				signal(SIGQUIT, SIG_DFL);
 				if (execute_tokens((*mnsh)->ast->tokens, mnsh))
 					exit(1);
 				exit(0);
 			}
 			else
 			{
+				signal(SIGINT, SIG_IGN);
 				waitpid(id, &exit_status, 0);
 				if (WIFEXITED(exit_status))
 					(*mnsh)->exit_code = WEXITSTATUS(exit_status);
+				signal(SIGINT, &sigint_handler);
 			}
 		}
 	}

@@ -47,20 +47,20 @@ int	is_executable(char *cmd)
 
 	if (stat(cmd, &buf) == -1)
 	{
-		printf("%s:", cmd);
-		ft_putstr_fd(" No such file or directory\n", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
 		return (127);
 	}
 	if (S_ISDIR(buf.st_mode))
 	{
-		printf("%s:", cmd);
-		ft_putstr_fd(" Is a directory\n", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": Is a directory\n", 2);
 		return (126);
 	}
 	if (access(cmd, X_OK) == -1)
 	{
-		printf("%s:", cmd);
-		ft_putstr_fd(" Permission denied\n", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": Permission denied\n", 2);
 		return (126);
 	}
 	return (0);
@@ -123,20 +123,19 @@ void excu_cmd(char **cmd, t_minishell **mnsh)
 	int		i;
 	char	**envp;
 
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
 	envp = dup_envparr((*mnsh)->envp);
 	exit_code = 0;
-	//to run scripts #!/bin/bash is needed (why?)
 	if (ft_strchr(cmd[0], '/'))
 	{
 		if (execve(cmd[0], cmd, envp) == -1)
 			exit_code = is_executable(cmd[0]);
 	}
-	else
+	else if (cmd[0][0] != '#')
 	{
 		path = get_path((*mnsh)->envp);
 		i = 0;
+		if (cmd[i][0] == '\0' && cmd[i + 1])
+			i = 1;
 		excu_cmd = ft_strjoin(path[i], cmd[0]);
 		while (path[i] && execve(excu_cmd, cmd, envp) == -1)
 		{
@@ -152,8 +151,8 @@ void excu_cmd(char **cmd, t_minishell **mnsh)
 		else
 		{
 			exit_code = 127;
-			printf("%s:", cmd[0]);
-			ft_putstr_fd(" command not found\n", 2);
+			ft_putstr_fd(cmd[0], 2);
+			ft_putstr_fd(": command not found\n", 2);
 		}
 		i = 0;
 		while (path[i])

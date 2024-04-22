@@ -73,14 +73,14 @@ int	cd(char **cmd, t_minishell **mnsh)
 {
 	if (cmd[1] && cmd[2])
 	{
-		printf("cd:");
-		ft_putstr_fd(" too many arguments\n", 2);
+		ft_putstr_fd("cd: too many arguments\n", 2);
 		return (1);
 	}
 	if (cmd[1] && chdir(cmd[1]) != 0)
 	{
-		printf("cd: %s:", cmd[1]);
-		ft_putstr_fd(" No such file or directory\n", 2);
+		ft_putstr_fd("cd: ", 2);
+		ft_putstr_fd(cmd[1], 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
 		return (1);
 	}
 	else if (!cmd[1])

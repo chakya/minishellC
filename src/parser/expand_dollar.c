@@ -172,18 +172,34 @@ void	join_expsn(char **dst, char *s1, char *s2)
 	(*dst)[j] = '\0';
 }
 
-void	apnd_expsn(char **temp, char *str, t_minishell **mnsh, int *j)
+void	apnd_expsn(char *str, t_parsestr *pstr, t_minishell **mnsh)
 {
 	char	*temp_dup;
 	char	*temp_val;
 
-	temp_dup = ft_strdup(*temp);
+	temp_dup = ft_strdup(pstr->temp);
 	temp_val = expand_dollar(str, mnsh);
-	*j += ft_strlen(temp_val);
-	free(*temp);
-	*temp = malloc((ft_strlen(temp_dup) + ft_strlen(temp_val)
+	pstr->j += ft_strlen(temp_val);
+	free(pstr->temp);
+	pstr->temp = malloc((ft_strlen(temp_dup) + ft_strlen(temp_val)
 		+ ft_strlen(str) + 1) * sizeof(char));
-	join_expsn(temp, temp_dup, temp_val);
+	join_expsn(&(pstr->temp), temp_dup, temp_val);
 	free(temp_dup);
 	free(temp_val);
 }
+
+// void	apnd_expsn(char **temp, char *str, t_minishell **mnsh, int *j)
+// {
+// 	char	*temp_dup;
+// 	char	*temp_val;
+
+// 	temp_dup = ft_strdup(*temp);
+// 	temp_val = expand_dollar(str, mnsh);
+// 	*j += ft_strlen(temp_val);
+// 	free(*temp);
+// 	*temp = malloc((ft_strlen(temp_dup) + ft_strlen(temp_val)
+// 		+ ft_strlen(str) + 1) * sizeof(char));
+// 	join_expsn(temp, temp_dup, temp_val);
+// 	free(temp_dup);
+// 	free(temp_val);
+// }

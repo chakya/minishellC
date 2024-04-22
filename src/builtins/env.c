@@ -19,8 +19,9 @@ int	env(char **cmd, t_minishell *mnsh)
 	temp = mnsh->envp;
 	if (cmd[1] && !is_redir(cmd[1]))
 	{
-		printf("env: '%s':", cmd[1]);
-		ft_putstr_fd(" No such file or directory\n", 2);
+		ft_putstr_fd("env: ", 2);
+		ft_putstr_fd(cmd[1], 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
 		return (1);
 	}
 	else
