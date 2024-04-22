@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/21 22:11:24 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/22 14:29:11 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,10 @@ t_dls	*tokenize_operation(char **input)
 		(*input)++;
 	}
 	else
-		token = ft_dlsnew(ft_strndup(*input, 1), get_ops_type(*input));T_OR
+		token = ft_dlsnew(ft_strndup(*input, 1), get_ops_type(*input));
+	(*input)++;
+	return (token);
+}
 
 t_dls	*tokenize_param(char **input)
 {
