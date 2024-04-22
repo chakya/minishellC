@@ -6,11 +6,29 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/22 22:29:27 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/22 22:31:04 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
+
+t_dls	*check_token(t_dls *tokens, t_dls *token)
+
+{
+	if (tokens && (token->type == T_PIPE || token->type >= T_INPUT))
+	{
+		ft_putstr_fd("Syntax Error\n", 2);
+		free_tokens(tokens);
+		tokens = NULL;
+	}
+	else if (tokens && (token->type >= T_COL && token->type <= T_AND))
+	{
+		ft_putstr_fd("Not supported\n", 2);
+		free_tokens(tokens);
+		tokens = NULL;
+	}
+	return (tokens);
+}
 
 t_dls	*parse_token(char *input)
 {
@@ -36,19 +54,22 @@ t_dls	*parse_token(char *input)
 			break ;
 		ft_skipspaces(&input);
 	}
-	if (tokens && (token->type == T_PIPE || token->type >= T_INPUT))
-	{
-		ft_putstr_fd("Syntax Error\n", 2);
-		free_tokens(tokens);
-		tokens = NULL;
-	}
-	else if (tokens && (token->type >= T_COL && token->type <= T_AND))
-	{
-		ft_putstr_fd("Not supported\n", 2);
-		free_tokens(tokens);
-		tokens = NULL;
-	}
+	tokens = check_token(tokens, token);
 	return (tokens);
+}
+
+int	count_args(t_dls *tokens)
+{
+	int	count;
+
+	count = 0;
+	while (tokens)
+	{
+		if (tokens->type == T_ARG)
+			count++;
+		tokens = tokens->next;
+	}
+	return (count);
 }
 
 char	**parse_to_arg(t_dls *tokens)
@@ -57,14 +78,7 @@ char	**parse_to_arg(t_dls *tokens)
 	char	**av;
 	int		i;
 
-	tmp = tokens;
-	i = 0;
-	while (tmp)
-	{
-		if (tmp->type == T_ARG)
-			i++;
-		tmp = tmp->next;
-	}
+	i = count_args(tokens);
 	if (i == 0)
 		return (NULL);
 	av = (char **)malloc((i + 1) * sizeof(char *));
