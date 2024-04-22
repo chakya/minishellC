@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 17:25:39 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/21 20:30:43 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/22 22:05:13 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,16 @@ char	**get_path(t_envp *envp)
 {
 	char	**path;
 	t_envp	*temp;
-    char    *dup_temp;
+	char	*dup_temp;
 	int		i;
 
 	i = 0;
-    temp = envp;
+	temp = envp;
 	while (ft_strncmp(temp->content, "PATH=", 5) != 0)
 	{
 		temp = temp->next;
 	}
-    path = ft_split((temp->content + 5), ':');
+	path = ft_split((temp->content + 5), ':');
 	i = 0;
 	while (path[i])
 	{
@@ -38,7 +38,7 @@ char	**get_path(t_envp *envp)
 		}
 		i++;
 	}
-    return (path);
+	return (path);
 }
 
 int	is_executable(char *cmd)
@@ -115,9 +115,9 @@ void	free_arr(char **arr)
 	free(arr);
 }
 
-void excu_cmd(char **cmd, t_minishell **mnsh)
+void	excu_cmd(char **cmd, t_minishell **mnsh)
 {
-    char	**path;
+	char	**path;
 	char	*excu_cmd;
 	int		exit_code;
 	int		i;
@@ -135,8 +135,9 @@ void excu_cmd(char **cmd, t_minishell **mnsh)
 		path = get_path((*mnsh)->envp);
 		i = 0;
 		if (cmd[i][0] == '\0' && cmd[i + 1])
-			i = 1;
-		excu_cmd = ft_strjoin(path[i], cmd[0]);
+			excu_cmd = ft_strjoin(path[i], cmd[1]);
+		else
+			excu_cmd = ft_strjoin(path[i], cmd[0]);
 		while (path[i] && execve(excu_cmd, cmd, envp) == -1)
 		{
 			free(excu_cmd);

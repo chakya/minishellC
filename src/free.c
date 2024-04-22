@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 12:42:00 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/21 16:29:15 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/22 20:58:47 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,51 @@ void	free_envp(t_envp **envp)
 	while (*envp)
 	{
 		temp = *envp;
-        *envp = (*envp)->next;
-        free(temp->content);
-        free(temp);
+		*envp = (*envp)->next;
+		free(temp->content);
+		free(temp);
 	}
 	*envp = NULL;
 }
 
-void    free_all(t_minishell **mnsh)
+void	free_all(t_minishell **mnsh)
 {
-    free_envp(&((*mnsh)->envp));
+	free_envp(&((*mnsh)->envp));
 	free(*mnsh);
 	*mnsh = NULL;
+}
+
+void	free_tokens(t_dls *tokens)
+{
+	t_dls	*temp;
+
+	while (tokens)
+	{
+		temp = tokens;
+		tokens = tokens->next;
+		free(temp->content);
+		free(temp);
+	}
+}
+
+void	free_ast(t_ast *ast)
+{
+	int	i;
+
+	if (ast->type == T_PIPE)
+	{
+		i = 0;
+		while (ast->children[i])
+		{
+			free_ast(ast->children[i]);
+			ast->children[i] = NULL;
+			i++;
+		}
+		free(ast->children);
+		ast->children = NULL;
+	}
+	free_tokens(ast->tokens);
+	ast->tokens = NULL;
+	free(ast);
+	ast = NULL;
 }
