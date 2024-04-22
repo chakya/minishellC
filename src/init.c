@@ -48,8 +48,6 @@ void	init_mnsh(char **envp, t_minishell **mnsh)
 		exit(1);
 	(*mnsh)->envp = init_envp(envp);
 	(*mnsh)->exit_sig = 0;
-	(*mnsh)->sgl_quote = 0;
-	(*mnsh)->dbl_quote = 0;
 	(*mnsh)->exit_code = 0;
 	(*mnsh)->is_child = 0;
 	(*mnsh)->ast = NULL;

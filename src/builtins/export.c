@@ -208,10 +208,9 @@ int	export(char **cmd, t_minishell **mnsh)
 	{
 		if (!is_validenvar(cmd[i]))
 		{
-			//printf("export: '%s': not a valid identifier\n", cmd[i]);
-			//perror(" not a valid identifier\n");
-			printf("export: '%s'", cmd[i]);
-			ft_putstr_fd(" not a valid identifier\n", 2);
+			ft_putstr_fd("export: '", 2);
+			ft_putstr_fd(cmd[i], 2);
+			ft_putstr_fd("' not a valid identifier\n", 2);
 			exit_code = 1;
 		}
 		else

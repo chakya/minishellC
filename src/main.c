@@ -32,7 +32,6 @@ int	main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 	t_minishell	*mnsh;
-	//t_signals	sigs;
 	char		*input;
 	t_dls		*tokens;
 	int 		exit_code;
@@ -40,7 +39,6 @@ int	main(int ac, char **av, char **envp)
 	init_mnsh(envp, &mnsh);
 	signal(SIGINT, &sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
-	//init_sigs(&sigs);
 	while (!mnsh->exit_sig)
 	{
 		input = readline("MiniDillon 🦊 ");

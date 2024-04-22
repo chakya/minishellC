@@ -77,19 +77,20 @@ typedef struct s_minishell
 {
 	t_envp				*envp;
 	int					exit_sig;
-	int					sgl_quote;
-	int					dbl_quote;
 	unsigned char		exit_code;
 	int					is_child;
 	t_ast				*ast;
 	int					*opipe;
 }						t_minishell;
 
-typedef struct s_signals
+typedef	struct s_parsestr
 {
-	struct sigaction	sigint_sa;
-	struct sigaction	sigquit_sa;
-}						t_signals;
+	int					i;
+	int					j;
+	int					sgl_quote;
+	int					dbl_quote;
+	char				*temp;
+}						t_parsestr;
 
 extern int				g_sig_received;
 
@@ -100,7 +101,6 @@ int						execute(t_dls *tokens, char **envp);
 t_ast					*parse_ast(t_dls *tokens);
 int						execute_ast(t_minishell **mnst, int *opipe);
 void free_ast(t_ast *ast);
-void	sigint_handler(int sig);
 //	=========================   built-ins   ===================================
 //	builtins_utils
 int						ft_strcmp(const char *s1, const char *s2);
@@ -131,8 +131,8 @@ void						excu_cmd(char **cmd, t_minishell **mnsh);
 t_envp					*newenvp(char *var);
 void					init_mnsh(char **envp, t_minishell **mnsh);
 //  =========================   signals   =====================================
+void					sigint_handler(int sig);
 void					eof_handler(t_minishell **mnsh);
-void					init_sigs(t_signals *sigs);
 //  =========================   free   ========================================
 void					free_envp(t_envp **envp);
 void					free_all(t_minishell **mnsh);
@@ -141,9 +141,12 @@ void					free_all(t_minishell **mnsh);
 int						envar_exist(char *str);
 int						is_envar(char *str);
 char					*expand_dollar(char *str, t_minishell **mnsh);
-void					apnd_expsn(char **temp, char *str, t_minishell **mnsh,
-							int *j);
+void					apnd_expsn(char *str, t_parsestr *pstr, t_minishell **mnsh);
+//	parse_quotes
+void	parse_sglquote(t_parsestr *pstr, char *str);
+void	parse_dblquote(t_parsestr *pstr, char *str, t_minishell **mnsh);
 //	parse_string
+void	process_dollar(char *str, t_parsestr *pstr, t_minishell **mnsh);
 char					*parse_string(char *str, t_minishell **mnsh);
 
 #endif
