@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/22 16:25:08 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/22 22:10:14 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@
 
 typedef struct s_envp
 {
-	char				*content;
-	struct s_envp		*next;
-}						t_envp;
+	char			*content;
+	struct s_envp	*next;
+}					t_envp;
 
 typedef enum s_type
 {
@@ -55,99 +55,128 @@ typedef enum s_type
 	T_HEREDOC,
 	T_TRUNC,
 	T_APPEND
-}						t_type;
+}					t_type;
 
 typedef struct s_dls
 {
-	char				*content;
-	t_type				type;
-	int					heredoc;
-	struct s_dls		*prev;
-	struct s_dls		*next;
-}						t_dls;
+	char			*content;
+	t_type			type;
+	int				heredoc;
+	struct s_dls	*prev;
+	struct s_dls	*next;
+}					t_dls;
 
 typedef struct s_ast
 {
-	t_type				type;
-	struct s_dls		*tokens;
-	struct s_ast		**children;
-}						t_ast;
+	t_type			type;
+	struct s_dls	*tokens;
+	struct s_ast	**children;
+}					t_ast;
 
 typedef struct s_minishell
 {
-	t_envp				*envp;
-	int					exit_sig;
-	unsigned char		exit_code;
-	int					is_child;
-	t_ast				*ast;
-	int					*opipe;
-	int					io[2];
-}						t_minishell;
+	t_envp			*envp;
+	int				exit_sig;
+	unsigned char	exit_code;
+	int				is_child;
+	t_ast			*ast;
+	int				*opipe;
+	int				io[2];
+}					t_minishell;
 
-typedef	struct s_parsestr
+typedef struct s_parsestr
 {
-	int					i;
-	int					j;
-	int					sgl_quote;
-	int					dbl_quote;
-	char				*temp;
-}						t_parsestr;
+	int				i;
+	int				j;
+	int				sgl_quote;
+	int				dbl_quote;
+	char			*temp;
+}					t_parsestr;
 
-extern int				g_sig_received;
+extern int			g_sig_received;
 
-t_dls					*parse_token(char *input);
-t_dls					*ft_dlsnew(char *content, t_type type);
-void					ft_dlsadd_back(t_dls **lst, t_dls *new);
-int						execute(t_dls *tokens, char **envp);
-t_ast					*parse_ast(t_dls *tokens);
-int						execute_ast(t_minishell **mnst, int *opipe);
-void free_ast(t_ast *ast);
+t_dls				*parse_token(char *input);
+t_dls				*ft_dlsnew(char *content, t_type type);
+void				ft_dlsadd_back(t_dls **lst, t_dls *new);
+int					execute(t_dls *tokens, char **envp);
+t_ast				*parse_ast(t_dls *tokens);
+int					execute_ast(t_minishell **mnst, int *opipe);
 //	=========================   built-ins   ===================================
 //	builtins_utils
-int						ft_strcmp(const char *s1, const char *s2);
-int						is_redir(char *str);
+int					ft_strcmp(const char *s1, const char *s2);
+int					is_redir(char *str);
 //  cd
-int						cd(char **cmd, t_minishell **mnsh);
+int					cd(char **cmd, t_minishell **mnsh);
 //	echo
-int						echo(char **cmd);
+int					echo(char **cmd);
 //	env
-int						env(char **cmd, t_minishell *mnsh);
+int					env(char **cmd, t_minishell *mnsh);
 //  exit
-int						mnsh_exit(char **cmd, t_minishell **mnsh);
+int					mnsh_exit(char **cmd, t_minishell **mnsh);
 //  export
-int						export(char **cmd, t_minishell **mnsh);
+int					export(char **cmd, t_minishell **mnsh);
 //	pwd
-int						pwd(void);
+int					pwd(void);
 //  unset
-int						unset(char **cmd, t_minishell **mnsh);
+int					unset(char **cmd, t_minishell **mnsh);
 //  =========================   execution   ===================================
 //  excu
 int					excu(char **cmd, t_minishell **mnsh);
-int						is_builtins(char **cmd);
+int					is_builtins(char **cmd);
 //  =========================   redirection   =================================
 //  get_path
-char					**get_path(t_envp *envp);
-void						excu_cmd(char **cmd, t_minishell **mnsh);
+char				**get_path(t_envp *envp);
+void				excu_cmd(char **cmd, t_minishell **mnsh);
 //  =========================   initialization   ==============================
-t_envp					*newenvp(char *var);
-void					init_mnsh(char **envp, t_minishell **mnsh);
+t_envp				*newenvp(char *var);
+void				init_mnsh(char **envp, t_minishell **mnsh);
 //  =========================   signals   =====================================
-void					sigint_handler(int sig);
-void					eof_handler(t_minishell **mnsh);
+void				sigint_handler(int sig);
+void				eof_handler(t_minishell **mnsh);
 //  =========================   free   ========================================
-void					free_envp(t_envp **envp);
-void					free_all(t_minishell **mnsh);
+void				free_envp(t_envp **envp);
+void				free_all(t_minishell **mnsh);
+void				free_tokens(t_dls *tokens);
+void				free_ast(t_ast *ast);
+
 //  =========================   parsing   =====================================
 //	parse_dollar
-int						envar_exist(char *str);
-int						is_envar(char *str);
-char					*expand_dollar(char *str, t_minishell **mnsh);
-void					apnd_expsn(char *str, t_parsestr *pstr, t_minishell **mnsh);
+int					envar_exist(char *str);
+int					is_envar(char *str);
+char				*expand_dollar(char *str, t_minishell **mnsh);
+void				apnd_expsn(char *str, t_parsestr *pstr, t_minishell **mnsh);
+char	*enval(char *var, t_envp *envp);
+
 //	parse_quotes
-void	parse_sglquote(t_parsestr *pstr, char *str);
-void	parse_dblquote(t_parsestr *pstr, char *str, t_minishell **mnsh);
+void				parse_sglquote(t_parsestr *pstr, char *str);
+void				parse_dblquote(t_parsestr *pstr, char *str,
+						t_minishell **mnsh);
 //	parse_string
-void	process_dollar(char *str, t_parsestr *pstr, t_minishell **mnsh);
-char					*parse_string(char *str, t_minishell **mnsh);
+void				process_dollar(char *str, t_parsestr *pstr,
+						t_minishell **mnsh);
+char				*parse_string(char *str, t_minishell **mnsh);
+
+// parser utils
+int					is_delim(char *c);
+int					ft_isspace(char c);
+int					loop_quote(char *c);
+int					ft_isoperation(char *str);
+void				ft_skipspaces(char **str);
+
+// token
+t_type				get_ops_type(char *ops);
+t_dls				*tokenize_operation(char **input);
+t_dls				*tokenize_param(char **input);
+// pipe
+t_ast				**populate_children(t_dls *tokens, int count);
+void				check_heredoc(t_dls *tokens);
+int					count_pipe(t_dls *tokens);
+int					delim_check(char *hline, char *delim);
+// exe token
+int					execute_tokens(t_dls *tokens, t_minishell **mnsh);
+
+// parsing
+char				**process_av(t_dls *tokens, t_minishell **mnsh);
+char				**parse_to_arg(t_dls *tokens);
 
 #endif

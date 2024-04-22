@@ -6,7 +6,7 @@
 #    By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/05 22:26:43 by dphang            #+#    #+#              #
-#    Updated: 2024/04/11 16:28:44 by cwijaya          ###   ########.fr        #
+#    Updated: 2024/04/22 21:59:35 by cwijaya          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,9 +29,15 @@ SRCS = \
 		src/builtins/builtins_utils.c \
 		src/excu/excu.c \
 		src/parser/expand_dollar.c \
+		src/parser/dollar_utils.c \
 		src/parser/parse_quotes.c \
 		src/parser/parse_string.c \
 		src/parser/parsing.c \
+		src/parser/parser_utils.c \
+		src/parser/token.c \
+		src/parser/exe_token.c \
+		src/parser/ast.c \
+		src/parser/pipe.c \
 		src/lst/dls.c \
 		src/excu/excu_cmd.c
 #		src/lst/dls.c \
