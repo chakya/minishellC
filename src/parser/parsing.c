@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/23 17:26:35 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/23 19:54:35 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,10 +190,14 @@ int	execute_ast(t_minishell **mnsh, int *opipe)
 				signal(SIGINT, SIG_IGN);
 				waitpid(id, &exit_status, 0);
 				if (WIFEXITED(exit_status))
-				{
 					(*mnsh)->exit_code = WEXITSTATUS(exit_status);
-					if (g_sig_received)
+				if (WIFSIGNALED(exit_status))
+				{
+					if (WTERMSIG(exit_status) == SIGINT)
+					{
+						g_sig_received = 1;
 						printf("\n");
+					}
 				}
 				signal(SIGINT, sigint_handler);
 			}
