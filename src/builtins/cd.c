@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <dphang@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 14:02:40 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/16 16:59:14 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/23 11:16:26 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,24 @@ char	*ft_strpathdup(const char *path, const char *value)
 	return (dup);
 }
 
+void	replace_prewd(t_envp **wd, t_envp **old_wd)
+{
+	char	*new_wd;
+
+	free((*old_wd)->content);
+	(*old_wd)->content = ft_strpathdup("OLDPWD=", (*wd)->content + 5);
+	free((*wd)->content);
+	new_wd = (char *)malloc(PATH_MAX * sizeof(char));
+	getcwd(new_wd, PATH_MAX);
+	(*wd)->content = ft_strpathdup("PWD=", new_wd);
+	free(new_wd);
+}
+
 void	update_wd(t_minishell **mnsh)
 {
 	t_envp	*wd;
 	t_envp	*old_wd;
 	t_envp	*temp;
-	char	*new_wd;
 
 	wd = NULL;
 	old_wd = NULL;
@@ -58,14 +70,11 @@ void	update_wd(t_minishell **mnsh)
 		temp = temp->next;
 	}
 	if (wd && old_wd)
+		replace_prewd(&wd, &old_wd);
+	else
 	{
-		free(old_wd->content);
-		old_wd->content = ft_strpathdup("OLDPWD=", (wd->content + 5));
-		free(wd->content);
-		new_wd = (char *)malloc(PATH_MAX * sizeof(char));
-		getcwd(new_wd, PATH_MAX);
-		wd->content = ft_strpathdup("PWD=", new_wd);
-		free(new_wd);
+		ft_putstr_fd("Error: PWD or OLDPWD not found in envp\n", 2);
+		(*mnsh)->exit_code = 1;
 	}
 }
 
