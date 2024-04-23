@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/23 12:30:04 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/23 19:35:55 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,11 +95,11 @@ typedef struct s_parsestr
 
 extern int			g_sig_received;
 
-t_dls				*parse_token(char *input);
+t_dls				*parse_token(char *input, t_minishell **mnsh);
 t_dls				*ft_dlsnew(char *content, t_type type);
 void				ft_dlsadd_back(t_dls **lst, t_dls *new);
 int					execute(t_dls *tokens, char **envp);
-t_ast				*parse_ast(t_dls *tokens);
+t_ast				*parse_ast(t_dls *tokens, t_minishell **mnsh);
 int					execute_ast(t_minishell **mnst, int *opipe);
 //	=========================   built-ins   ===================================
 //	builtins_utils
@@ -174,10 +174,10 @@ void				ft_skipspaces(char **str);
 // token
 t_type				get_ops_type(char *ops);
 t_dls				*tokenize_operation(char **input);
-t_dls				*tokenize_param(char **input);
+t_dls				*tokenize_param(char **input, t_minishell **mnsh);
 // pipe
-t_ast				**populate_children(t_dls *tokens, int count);
-void				check_heredoc(t_dls *tokens);
+t_ast				**populate_children(t_dls *tokens, int count, t_minishell **mnsh);
+void				check_heredoc(t_dls *tokens, t_minishell **mnsh);
 int					count_pipe(t_dls *tokens);
 int					delim_check(char *hline, char *delim);
 // exe token

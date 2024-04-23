@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   excu.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 09:40:29 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/23 11:25:28 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/23 19:46:22 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,14 +44,64 @@ int	builtins(char **cmd, t_minishell **mnsh)
 	return (0);
 }
 
+char **split_cmd(char **cmd)
+{
+	int		i;
+	int		j;
+	char	**temp;
+	char	**new_cmd;
+
+	temp = ft_split(cmd[0], ' ');
+	free(cmd[0]);
+	i = 0;
+	j = 0;
+	while (temp[i])
+		i++;
+	while (cmd[j])
+		j++;
+	new_cmd = malloc(sizeof(char *) * (i + j + 1));
+	if (new_cmd == NULL)
+		return (NULL);
+	i = -1;
+	j = -1;
+	while (temp[++i])
+		new_cmd[i] = temp[i];
+	while (cmd[++j + 1])
+		new_cmd[i + j] = cmd[j + 1];
+	free(cmd);
+	free(temp);
+	new_cmd[i + j] = NULL;
+	return (new_cmd);
+}
+
+
+void	free_av(char **av)
+{
+	int	i;
+
+	i = 0;
+	while (av[i])
+	{
+		free(av[i]);
+		i++;
+	}
+	free(av);
+}
+
 int	excu(char **cmd, t_minishell **mnsh)
 {
+	int exit_code;
+
+	exit_code = 0;
 	if (cmd[0])
 	{
+		if (ft_strchr(cmd[0], ' '))
+			cmd = split_cmd(cmd);
 		if (is_builtins(cmd))
-			return (builtins(cmd, mnsh));
+			exit_code = builtins(cmd, mnsh);
 		else
 			excu_cmd(cmd, mnsh);
 	}
-	return (0);
+	free_av(cmd);
+	return (exit_code);
 }

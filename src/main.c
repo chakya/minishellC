@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 09:06:01 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/23 11:15:44 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/23 19:34:12 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,11 @@ void	minishell(t_minishell **mnsh)
 			(*mnsh)->exit_code = 130;
 			g_sig_received = 0;
 		}
-		tokens = parse_token(input);
+		tokens = parse_token(input, mnsh);
 		free(input);
 		if (!tokens)
 			continue ;
-		(*mnsh)->ast = parse_ast(tokens);
+		(*mnsh)->ast = parse_ast(tokens, mnsh);
 		execute_ast(mnsh, NULL);
 	}
 }

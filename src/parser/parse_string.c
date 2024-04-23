@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_string.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 09:45:00 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/23 11:15:57 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/23 19:39:53 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,34 @@ char	*cleanup_parse(t_parsestr *pstr)
 }
 
 char	*parse_string(char *str, t_minishell **mnsh)
+{
+	t_parsestr	pstr;
+
+	init_parsestr(&pstr, str);
+	while (str[pstr.i])
+	{
+		if (str[pstr.i] == '\'')
+			parse_sglquote(&pstr, str);
+		else if (str[pstr.i] == '"')
+		{
+			parse_dblquote(&pstr, str, mnsh);
+		}
+		else if (is_envar(str + (pstr.i)))
+			process_dollar(str + (pstr.i), &pstr, mnsh);
+		else
+		{
+			pstr.temp[pstr.j] = str[pstr.i];
+			(pstr.j)++;
+			(pstr.i)++;
+		}
+		if (pstr.sgl_quote == 1 || pstr.dbl_quote == 1)
+			break ;
+	}
+	free(str);
+	return (cleanup_parse(&pstr));
+}
+
+char	*parse_string2(char *str, t_minishell **mnsh)
 {
 	t_parsestr	pstr;
 
