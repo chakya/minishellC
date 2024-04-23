@@ -3,125 +3,83 @@
 /*                                                        :::      ::::::::   */
 /*   excu_cmd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 17:25:39 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/22 22:05:13 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/23 12:44:05 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-char	**get_path(t_envp *envp)
+void	append_slash(char ***path)
 {
-	char	**path;
-	t_envp	*temp;
-	char	*dup_temp;
 	int		i;
+	char	*dup_temp;
 
 	i = 0;
-	temp = envp;
-	while (ft_strncmp(temp->content, "PATH=", 5) != 0)
+	while ((*path)[i])
 	{
-		temp = temp->next;
-	}
-	path = ft_split((temp->content + 5), ':');
-	i = 0;
-	while (path[i])
-	{
-		if (path[i][ft_strlen(path[i]) - 1] != '/')
+		if ((*path)[i][ft_strlen((*path)[i]) - 1] != '/')
 		{
-			dup_temp = ft_strdup(path[i]);
-			free(path[i]);
-			path[i] = ft_strjoin(dup_temp, "/");
+			dup_temp = ft_strdup((*path)[i]);
+			free((*path)[i]);
+			(*path)[i] = ft_strjoin(dup_temp, "/");
 			free(dup_temp);
 		}
 		i++;
 	}
+}
+
+char	**get_path(t_envp *envp)
+{
+	char	**path;
+	t_envp	*temp;
+
+	temp = envp;
+	while (temp && ft_strncmp(temp->content, "PATH=", 5) != 0)
+	{
+		temp = temp->next;
+	}
+	if (temp == NULL)
+		return (NULL);
+	path = ft_split((temp->content + 5), ':');
+	append_slash(&path);
 	return (path);
 }
 
-int	is_executable(char *cmd)
+void	excu_pathcmd(int *exit_code, char **cmd, char **envp, char ***path)
 {
-	struct stat	buf;
-
-	if (stat(cmd, &buf) == -1)
-	{
-		ft_putstr_fd(cmd, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		return (127);
-	}
-	if (S_ISDIR(buf.st_mode))
-	{
-		ft_putstr_fd(cmd, 2);
-		ft_putstr_fd(": Is a directory\n", 2);
-		return (126);
-	}
-	if (access(cmd, X_OK) == -1)
-	{
-		ft_putstr_fd(cmd, 2);
-		ft_putstr_fd(": Permission denied\n", 2);
-		return (126);
-	}
-	return (0);
-}
-
-int	envp_size(t_envp *envp)
-{
-	int		size;
-	t_envp	*temp;
-
-	size = 0;
-	temp = envp;
-	while (temp)
-	{
-		size++;
-		temp = temp->next;
-	}
-	return (size);
-}
-
-char	**dup_envparr(t_envp *envp)
-{
-	t_envp	*temp;
-	char	**envp_arr;
+	char	*excu_cmd;
 	int		i;
 
 	i = 0;
-	temp = envp;
-	envp_arr = (char **)malloc((envp_size(envp) + 1) * sizeof(char *));
-	if (!envp_arr)
-		return (NULL);
-	while (temp)
+	excu_cmd = ft_strjoin((*path)[i], cmd[0]);
+	while ((*path)[i] && execve(excu_cmd, cmd, envp) == -1)
 	{
-		envp_arr[i] = ft_strdup(temp->content);
-		temp = temp->next;
+		free(excu_cmd);
 		i++;
+		if ((*path)[i])
+			excu_cmd = ft_strjoin((*path)[i], cmd[0]);
+		else
+			excu_cmd = NULL;
 	}
-	envp_arr[i] = NULL;
-	return (envp_arr);
-}
-
-void	free_arr(char **arr)
-{
-	int	i;
-
-	i = 0;
-	while (arr[i])
+	if (excu_cmd)
+		free(excu_cmd);
+	else
 	{
-		free(arr[i]);
-		i++;
+		*exit_code = 127;
+		ft_putstr_fd(cmd[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
 	}
-	free(arr);
+	free_arr(path);
 }
 
 void	excu_cmd(char **cmd, t_minishell **mnsh)
 {
-	char	**path;
-	char	*excu_cmd;
-	int		exit_code;
-	int		i;
 	char	**envp;
+	char	**path;
+	int		exit_code;
 
 	envp = dup_envparr((*mnsh)->envp);
 	exit_code = 0;
@@ -133,36 +91,11 @@ void	excu_cmd(char **cmd, t_minishell **mnsh)
 	else if (cmd[0][0] != '#')
 	{
 		path = get_path((*mnsh)->envp);
-		i = 0;
-		if (cmd[i][0] == '\0' && cmd[i + 1])
-			excu_cmd = ft_strjoin(path[i], cmd[1]);
+		if (path == NULL)
+			exit_code = is_executable(cmd[0]);
 		else
-			excu_cmd = ft_strjoin(path[i], cmd[0]);
-		while (path[i] && execve(excu_cmd, cmd, envp) == -1)
-		{
-			free(excu_cmd);
-			i++;
-			if (path[i])
-				excu_cmd = ft_strjoin(path[i], cmd[0]);
-			else
-				excu_cmd = NULL;
-		}
-		if (excu_cmd)
-			free(excu_cmd);
-		else
-		{
-			exit_code = 127;
-			ft_putstr_fd(cmd[0], 2);
-			ft_putstr_fd(": command not found\n", 2);
-		}
-		i = 0;
-		while (path[i])
-		{
-			free(path[i]);
-			i++;
-		}
-		free(path);
-		free_arr(envp);
+			excu_pathcmd(&exit_code, cmd, envp, &path);
 	}
+	free_arr(&envp);
 	exit(exit_code);
 }

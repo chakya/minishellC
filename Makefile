@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+         #
+#    By: dphang <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/05 22:26:43 by dphang            #+#    #+#              #
-#    Updated: 2024/04/22 21:59:35 by cwijaya          ###   ########.fr        #
+#    Updated: 2024/04/23 11:43:18 by dphang           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,13 +23,17 @@ SRCS = \
 		src/builtins/echo.c \
 		src/builtins/env.c \
 		src/builtins/exit.c \
+		src/builtins/export_sort.c \
+		src/builtins/export_utils.c \
 		src/builtins/export.c \
 		src/builtins/unset.c \
 		src/builtins/pwd.c \
 		src/builtins/builtins_utils.c \
+		src/excu/excu_cmd_utils.c \
+		src/excu/excu_cmd.c \
 		src/excu/excu.c \
+		src/parser/expand_dollar_utils.c \
 		src/parser/expand_dollar.c \
-		src/parser/dollar_utils.c \
 		src/parser/parse_quotes.c \
 		src/parser/parse_string.c \
 		src/parser/parsing.c \
@@ -38,12 +42,7 @@ SRCS = \
 		src/parser/exe_token.c \
 		src/parser/ast.c \
 		src/parser/pipe.c \
-		src/lst/dls.c \
-		src/excu/excu_cmd.c
-#		src/lst/dls.c \
-		src/parser/parsing.c \
-		src/parser/split.c \
-		src/pipe/mnsh_pipe.c
+		src/lst/dls.c
 OBJS = $(SRCS:.c=.o)
 RM = rm -rf
 

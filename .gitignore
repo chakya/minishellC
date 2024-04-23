@@ -1,2 +1,3 @@
 */*.o
 minishell_tester
+.vscode

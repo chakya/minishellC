@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/22 22:10:14 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/23 12:30:04 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,14 @@ int					echo(char **cmd);
 int					env(char **cmd, t_minishell *mnsh);
 //  exit
 int					mnsh_exit(char **cmd, t_minishell **mnsh);
+//  export_sort
+void				sort_print(t_envp *envp);
+//  export_utils
+t_envp				*envp_exist(char *envp, t_minishell **mnsh);
+void				add_exp(char *envp, t_minishell **mnsh);
+char				*enclose_val(char *envp);
+t_envp				*dup_envp(t_envp *envp);
+int					is_validenvar(char *envp);
 //  export
 int					export(char **cmd, t_minishell **mnsh);
 //	pwd
@@ -123,8 +131,11 @@ int					unset(char **cmd, t_minishell **mnsh);
 //  excu
 int					excu(char **cmd, t_minishell **mnsh);
 int					is_builtins(char **cmd);
-//  =========================   redirection   =================================
-//  get_path
+//	excu_cmd_utils
+int					is_executable(char *cmd);
+int					envp_size(t_envp *envp);
+char				**dup_envparr(t_envp *envp);
+//  excu_cmd
 char				**get_path(t_envp *envp);
 void				excu_cmd(char **cmd, t_minishell **mnsh);
 //  =========================   initialization   ==============================
@@ -138,15 +149,14 @@ void				free_envp(t_envp **envp);
 void				free_all(t_minishell **mnsh);
 void				free_tokens(t_dls *tokens);
 void				free_ast(t_ast *ast);
-
+void				free_arr(char ***arr);
 //  =========================   parsing   =====================================
 //	parse_dollar
 int					envar_exist(char *str);
 int					is_envar(char *str);
 char				*expand_dollar(char *str, t_minishell **mnsh);
 void				apnd_expsn(char *str, t_parsestr *pstr, t_minishell **mnsh);
-char	*enval(char *var, t_envp *envp);
-
+char				*enval(char *var, t_envp *envp);
 //	parse_quotes
 void				parse_sglquote(t_parsestr *pstr, char *str);
 void				parse_dblquote(t_parsestr *pstr, char *str,
@@ -155,14 +165,12 @@ void				parse_dblquote(t_parsestr *pstr, char *str,
 void				process_dollar(char *str, t_parsestr *pstr,
 						t_minishell **mnsh);
 char				*parse_string(char *str, t_minishell **mnsh);
-
 // parser utils
 int					is_delim(char *c);
 int					ft_isspace(char c);
 int					loop_quote(char *c);
 int					ft_isoperation(char *str);
 void				ft_skipspaces(char **str);
-
 // token
 t_type				get_ops_type(char *ops);
 t_dls				*tokenize_operation(char **input);
@@ -174,7 +182,6 @@ int					count_pipe(t_dls *tokens);
 int					delim_check(char *hline, char *delim);
 // exe token
 int					execute_tokens(t_dls *tokens, t_minishell **mnsh);
-
 // parsing
 char				**process_av(t_dls *tokens, t_minishell **mnsh);
 char				**parse_to_arg(t_dls *tokens);

@@ -3,14 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   expand_dollar.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 10:58:22 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/22 22:10:04 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/23 11:15:59 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
+
+char	*get_envname(char *str, int *i, int j)
+{
+	char	*name;
+
+	name = malloc((j + 2) * sizeof(char));
+	if (name == NULL)
+		return (NULL);
+	while ((*i) < j)
+	{
+		name[*i] = str[*i];
+		(*i)++;
+	}
+	name[*i] = '=';
+	name[(*i) + 1] = '\0';
+	return (name);
+}
 
 char	*get_enval(char *str, t_envp *envp)
 {
@@ -27,16 +44,7 @@ char	*get_enval(char *str, t_envp *envp)
 			break ;
 		j++;
 	}
-	name = malloc((j + 2) * sizeof(char));
-	if (name == NULL)
-		return (NULL);
-	while (i < j)
-	{
-		name[i] = str[i];
-		i++;
-	}
-	name[i++] = '=';
-	name[i] = '\0';
+	name = get_envname(str, &i, j);
 	var_val = enval(name, envp);
 	free(name);
 	return (var_val);

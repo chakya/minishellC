@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <dphang@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 14:02:40 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/16 17:00:09 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/23 11:16:18 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void	rm_envp(t_minishell **mnsh, t_envp **to_rm)
 	else
 	{
 		temp = (*mnsh)->envp;
-		while (temp && !(ft_strncmp(temp->next->content, (*to_rm)->content, ft_strlen((*to_rm)->content)) == 0))
+		while (temp && !(ft_strncmp(temp->next->content, (*to_rm)->content,
+					ft_strlen((*to_rm)->content)) == 0))
 		{
 			temp = temp->next;
 		}
@@ -38,15 +39,15 @@ void	rm_envp(t_minishell **mnsh, t_envp **to_rm)
 
 int	unset(char **cmd, t_minishell **mnsh)
 {
-	t_envp *temp;
-	int 	i;
+	t_envp	*temp;
+	int		i;
 
 	i = 1;
 	while (cmd[i])
 	{
-
 		temp = (*mnsh)->envp;
-		while (temp && (ft_strncmp(temp->content, cmd[i], ft_strlen(cmd[i])) != 0 ))
+		while (temp && (ft_strncmp(temp->content, cmd[i],
+					ft_strlen(cmd[i])) != 0))
 		{
 			temp = temp->next;
 		}
