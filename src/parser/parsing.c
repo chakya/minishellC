@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:59:06 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/22 22:31:04 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/23 17:26:35 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ t_dls	*check_token(t_dls *tokens, t_dls *token)
 	return (tokens);
 }
 
-t_dls	*parse_token(char *input)
+t_dls	*parse_token(char *input, t_minishell **mnsh)
 {
 	t_dls	*tokens;
 	t_dls	*token;
@@ -42,7 +42,7 @@ t_dls	*parse_token(char *input)
 		if (get_ops_type(input))
 			token = tokenize_operation(&input);
 		else
-			token = tokenize_param(&input);
+			token = tokenize_param(&input, mnsh);
 		ft_dlsadd_back(&tokens, token);
 		if (!tokens)
 		{

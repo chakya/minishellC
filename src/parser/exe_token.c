@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 21:41:11 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/22 21:41:23 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/23 18:57:03 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,19 +98,6 @@ int	proc_redir(t_dls *tokens, t_minishell *mnsh)
 	return (0);
 }
 
-void	free_av(char **av)
-{
-	int	i;
-
-	i = 0;
-	while (av[i])
-	{
-		free(av[i]);
-		i++;
-	}
-	free(av);
-}
-
 int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 {
 	char	**av;
@@ -121,6 +108,5 @@ int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 	if (!av)
 		return (0);
 	(*mnsh)->exit_code = excu(av, mnsh);
-	free_av(av);
 	return (0);
 }

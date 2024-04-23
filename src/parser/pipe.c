@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 21:00:17 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/22 22:12:48 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/23 19:40:26 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,10 +62,11 @@ void	interupt_handler(int signum)
 	}
 }
 
-void	check_heredoc(t_dls *tokens)
+void	check_heredoc(t_dls *tokens, t_minishell **mnsh)
 {
 	char	*delim;
 	char	*hline;
+	char	*parsed;
 	int		fd[2];
 	int		pid;
 
@@ -89,9 +90,10 @@ void	check_heredoc(t_dls *tokens)
 					hline = readline("> ");
 					if (delim_check(hline, delim))
 						break ;
-					ft_putstr_fd(hline, fd[1]);
+					parsed = parse_string(hline, mnsh);
+					ft_putstr_fd((parsed), fd[1]);
 					ft_putstr_fd("\n", fd[1]);
-					free(hline);
+					free(parsed);
 				}
 				close(fd[1]);
 				close(fd[0]);
@@ -107,7 +109,7 @@ void	check_heredoc(t_dls *tokens)
 	}
 }
 
-t_ast	**populate_children(t_dls *tokens, int count)
+t_ast	**populate_children(t_dls *tokens, int count, t_minishell **mnsh)
 {
 	t_ast	**children;
 	int		i;
@@ -120,7 +122,7 @@ t_ast	**populate_children(t_dls *tokens, int count)
 		{
 			children[i] = (t_ast *)malloc(sizeof(t_ast));
 			children[i]->tokens = copy_prev(&tokens);
-			check_heredoc(children[i]->tokens);
+			check_heredoc(children[i]->tokens, mnsh);
 			children[i]->type = T_CMD;
 			i++;
 		}
