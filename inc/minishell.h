@@ -6,7 +6,7 @@
 /*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/23 11:42:49 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/23 12:30:04 by dphang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ void				free_envp(t_envp **envp);
 void				free_all(t_minishell **mnsh);
 void				free_tokens(t_dls *tokens);
 void				free_ast(t_ast *ast);
-void				free_arr(char **arr);
+void				free_arr(char ***arr);
 //  =========================   parsing   =====================================
 //	parse_dollar
 int					envar_exist(char *str);
