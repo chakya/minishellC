@@ -6,28 +6,27 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 21:43:14 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/23 19:51:07 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 16:01:01 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-char	**process_av(t_dls *tokens, t_minishell **mnsh)
+char	**process_av(t_dls *tokens)
 {
 	t_dls	*tmp;
 	char	**av;
 	char	*dollar_var;
-	(void) mnsh;
+
 	tmp = tokens;
 	while (tmp)
 	{
 		if (ft_strchr(tmp->content, '\'') || ft_strchr(tmp->content, '\"')
 			|| envar_exist(tmp->content))
 		{
-			dollar_var = tmp->content;// parse_string(tmp->content, mnsh);
+			dollar_var = tmp->content;
 			if (dollar_var[0] == '\0' && tmp->content[0])
 				tmp->type = T_EMPTY;
-			// free(tmp->content);
 			tmp->content = dollar_var;
 		}
 		tmp = tmp->next;

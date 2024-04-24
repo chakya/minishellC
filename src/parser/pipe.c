@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 21:00:17 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/23 20:51:15 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 16:28:46 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,24 +49,9 @@ t_dls	*copy_prev(t_dls **tokens)
 	return (temp);
 }
 
-void	interupt_handler(int signum)
-{
-	if (signum == SIGINT)
-	{
-		rl_replace_line("", 0);
-		rl_on_new_line();
-		rl_redisplay();
-		ft_putstr_fd("\n", 1);
-		g_sig_received = 1;
-		exit(130);
-	}
-}
-
 void	check_heredoc(t_dls *tokens, t_minishell **mnsh)
 {
 	char	*delim;
-	char	*hline;
-	char	*parsed;
 	int		fd[2];
 	int		pid;
 
@@ -82,25 +67,7 @@ void	check_heredoc(t_dls *tokens, t_minishell **mnsh)
 			delim = tokens->next->content;
 			pipe(fd);
 			pid = fork();
-			if (!pid)
-			{
-				signal(SIGINT, interupt_handler);
-				while (delim)
-				{
-					hline = readline("> ");
-					if (!hline)
-						break;
-					if (delim_check(hline, delim))
-						break ;
-					parsed = parse_string(hline, mnsh);
-					ft_putstr_fd((parsed), fd[1]);
-					ft_putstr_fd("\n", fd[1]);
-					free(parsed);
-				}
-				close(fd[1]);
-				close(fd[0]);
-				exit(0);
-			}
+			fork_heredoc(pid, fd, delim, mnsh);
 			close(fd[1]);
 			tokens->heredoc = fd[0];
 			signal(SIGINT, SIG_IGN);

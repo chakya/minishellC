@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 09:40:29 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/24 15:19:10 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 18:08:10 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,14 +86,13 @@ int	excu(char **cmd, t_minishell **mnsh)
 	exit_code = 0;
 	if (cmd[0])
 	{
-		if (ft_strchr(cmd[0], ' '))
+		if (!is_onlyspace(cmd[0]) && ft_strchr(cmd[0], ' '))
 			cmd = split_cmd(cmd);
 		if (is_builtins(cmd))
 			exit_code = builtins(cmd, mnsh);
 		else
 			excu_cmd(cmd, mnsh);
 	}
-	// free_av(cmd);
 	free_arr(&cmd);
 	return (exit_code);
 }

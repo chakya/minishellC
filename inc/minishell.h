@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/24 15:19:18 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 18:09:13 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,7 @@ int					echo(char **cmd);
 int					env(char **cmd, t_minishell *mnsh);
 //  exit
 int					mnsh_exit(char **cmd, t_minishell **mnsh);
+void				exit_child(t_minishell **mnsh, int exit_status);
 //  export_sort
 void				sort_print(t_envp *envp);
 //  export_utils
@@ -138,6 +139,7 @@ char				**dup_envparr(t_envp *envp);
 //  excu_cmd
 char				**get_path(t_envp *envp);
 void				excu_cmd(char **cmd, t_minishell **mnsh);
+int					is_onlyspace(char *str);
 //  =========================   initialization   ==============================
 t_envp				*newenvp(char *var);
 void				init_mnsh(char **envp, t_minishell **mnsh);
@@ -176,6 +178,7 @@ t_type				get_ops_type(char *ops);
 t_dls				*tokenize_operation(char **input);
 t_dls				*tokenize_param(char **input, t_minishell **mnsh,
 						t_dls *token);
+void				empty_string(t_dls *tokens);
 // pipe
 t_ast				**populate_children(t_dls *tokens, int count,
 						t_minishell **mnsh);
@@ -185,10 +188,13 @@ int					delim_check(char *hline, char *delim);
 // exe token
 int					execute_tokens(t_dls *tokens, t_minishell **mnsh);
 // parsing
-char				**process_av(t_dls *tokens, t_minishell **mnsh);
+char				**process_av(t_dls *tokens);
 char				**parse_to_arg(t_dls *tokens);
 // token utils
 t_dls				*parse_token(char *input, t_minishell **mnsh);
 char				**parse_to_arg(t_dls *tokens);
+// redir utils
+void				fork_heredoc(int pid, int fd[2], char *delim,
+						t_minishell **mnsh);
 
 #endif

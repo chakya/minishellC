@@ -6,26 +6,11 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 21:41:11 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/23 18:57:03 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 17:03:25 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
-
-void	empty_string(t_dls *tokens)
-{
-	char	*str;
-
-	if (!tokens)
-		return ;
-	str = tokens->content;
-	while (*str)
-	{
-		*str = '\0';
-		str++;
-	}
-	tokens->type = T_EMPTY;
-}
 
 void	rem2(t_dls *tokens)
 {
@@ -38,49 +23,52 @@ void	rem2(t_dls *tokens)
 	}
 }
 
-int	proc_redir(t_dls *tokens, t_minishell *mnsh)
+int	redir_error(int f)
 {
-	int	fd[2] = {-1, -1};
-
-	while (tokens)
+	if (f < 0)
 	{
-		if (tokens->type == T_INPUT)
-		{
-			fd[0] = open(tokens->next->content, O_RDONLY);
-			if (fd[0] < 0)
-			{
-				perror("");
-				return (1);
-			}
-			rem2(tokens);
-		}
-		else if (tokens->type == T_HEREDOC)
-		{
-			fd[0] = tokens->heredoc;
-			rem2(tokens);
-		}
-		else if (tokens->type == T_TRUNC)
-		{
+		perror("");
+		return (1);
+	}
+	return (0);
+}
+
+int	check_redir(int *fd, t_dls *tokens)
+{
+	if (tokens->type == T_INPUT)
+	{
+		fd[0] = open(tokens->next->content, O_RDONLY);
+		if (redir_error(fd[0]))
+			return (1);
+	}
+	else if (tokens->type == T_HEREDOC)
+		fd[0] = tokens->heredoc;
+	else if (tokens->type == T_TRUNC || tokens->type == T_APPEND)
+	{
+		if (tokens->type == T_TRUNC)
 			fd[1] = open(tokens->next->content, O_WRONLY | O_CREAT | O_TRUNC,
 					0644);
-			if (fd[1] < 0)
-			{
-				perror("");
-				return (1);
-			}
-			rem2(tokens);
-		}
 		else if (tokens->type == T_APPEND)
-		{
 			fd[1] = open(tokens->next->content, O_WRONLY | O_CREAT | O_APPEND,
 					0644);
-			if (fd[1] < 0)
-			{
-				perror("");
-				return (1);
-			}
-			rem2(tokens);
-		}
+		if (redir_error(fd[1]))
+			return (1);
+	}
+	if (tokens->type >= T_INPUT)
+		rem2(tokens);
+	return (0);
+}
+
+int	proc_redir(t_dls *tokens, t_minishell *mnsh)
+{
+	int	fd[2];
+
+	fd[0] = -1;
+	fd[1] = -1;
+	while (tokens)
+	{
+		if (check_redir(fd, tokens))
+			return (1);
 		tokens = tokens->next;
 	}
 	mnsh->io[0] = dup(STDIN_FILENO);
@@ -104,7 +92,7 @@ int	execute_tokens(t_dls *tokens, t_minishell **mnsh)
 
 	if (proc_redir(tokens, *mnsh))
 		return (1);
-	av = process_av(tokens, mnsh);
+	av = process_av(tokens);
 	if (!av)
 		return (0);
 	(*mnsh)->exit_code = excu(av, mnsh);

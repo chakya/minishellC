@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 14:02:40 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/23 11:16:21 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/24 15:51:47 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,18 @@ int	mnsh_exit(char **cmd, t_minishell **mnsh)
 			return (ft_atoi(cmd[1]));
 	}
 	return (0);
+}
+
+void	exit_child(t_minishell **mnsh, int exit_status)
+{
+	if (WIFEXITED(exit_status))
+		(*mnsh)->exit_code = WEXITSTATUS(exit_status);
+	if (WIFSIGNALED(exit_status))
+	{
+		if (WTERMSIG(exit_status) == SIGINT)
+		{
+			g_sig_received = 1;
+			printf("\n");
+		}
+	}
 }

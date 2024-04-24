@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 14:57:08 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/24 14:57:30 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 17:54:47 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ t_dls	*check_token(t_dls *tokens, t_dls *token)
 		free_tokens(tokens);
 		tokens = NULL;
 	}
-
 	if (tokens && (token->type >= T_COL && token->type <= T_AND))
 	{
 		ft_putstr_fd("Not supported\n", 2);

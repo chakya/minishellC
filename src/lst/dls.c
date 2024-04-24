@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dls.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 17:28:39 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/23 11:18:02 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/24 17:51:22 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 t_dls	*ft_dlsnew(char *content, t_type type)
 {
 	t_dls	*node;
-
+	if (!content)
+		return (NULL);
 	node = malloc(sizeof(t_dls));
 	if (!node)
 		return (NULL);

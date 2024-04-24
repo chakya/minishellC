@@ -6,7 +6,7 @@
 #    By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/05 22:26:43 by dphang            #+#    #+#              #
-#    Updated: 2024/04/24 14:59:21 by cwijaya          ###   ########.fr        #
+#    Updated: 2024/04/24 17:05:32 by cwijaya          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,7 @@ SRCS = \
 		src/parser/parse_string.c \
 		src/parser/parsing.c \
 		src/parser/parser_utils.c \
+		src/parser/redir_utils.c \
 		src/parser/token.c \
 		src/parser/token_utils.c \
 		src/parser/exe_token.c \
@@ -51,7 +52,7 @@ all : $(NAME)
 
 $(NAME): $(OBJS)
 	@${MAKE} -C lib/libft
-	@${CC} ${CFLAGS} ${OBJS} ${LIBFT} -lreadline -o ${NAME} -g
+	@${CC} ${CFLAGS} ${OBJS} ${LIBFT} -lreadline -o ${NAME}
 
 .c.o:
 	@${CC} ${CFLAGS} -c $< -o ${<:.c=.o} -g

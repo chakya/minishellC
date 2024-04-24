@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 20:40:17 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/24 14:34:41 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 17:54:57 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ t_dls	*tokenize_param(char **input, t_minishell **mnsh, t_dls *prev)
 	char	*str;
 
 	l = 0;
-	while ((*input)[l]  && !is_delim((*input) + l))
+	while ((*input)[l] && !is_delim((*input) + l))
 	{
 		if ((*input)[l] == '"' || (*input)[l] == '\'')
 			l += loop_quote((*input) + l);
@@ -88,11 +88,26 @@ t_dls	*tokenize_param(char **input, t_minishell **mnsh, t_dls *prev)
 	}
 	if (l == 0)
 		return (NULL);
-	if (prev && prev->type != T_HEREDOC)
+	if (!prev || (prev && prev->type != T_HEREDOC))
 		str = parse_string(ft_strndup(*input, l), mnsh);
 	else
 		str = ft_strndup(*input, l);
 	token = ft_dlsnew(str, T_ARG);
 	*input += l;
 	return (token);
+}
+
+void	empty_string(t_dls *tokens)
+{
+	char	*str;
+
+	if (!tokens)
+		return ;
+	str = tokens->content;
+	while (*str)
+	{
+		*str = '\0';
+		str++;
+	}
+	tokens->type = T_EMPTY;
 }
