@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 09:40:29 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/24 15:09:38 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 15:19:10 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,22 @@ int	builtins(char **cmd, t_minishell **mnsh)
 	return (0);
 }
 
+void	split_cmd_mallloc(char ***new_cmd, char **temp, char **cmd)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (temp[i])
+		i++;
+	while (cmd[j])
+		j++;
+	*new_cmd = malloc(sizeof(char *) * (i + j + 1));
+	if (*new_cmd == NULL)
+		return ;
+}
+
 char	**split_cmd(char **cmd)
 {
 	int		i;
@@ -50,15 +66,7 @@ char	**split_cmd(char **cmd)
 
 	temp = ft_split(cmd[0], ' ');
 	free(cmd[0]);
-	i = 0;
-	j = 0;
-	while (temp[i])
-		i++;
-	while (cmd[j])
-		j++;
-	new_cmd = malloc(sizeof(char *) * (i + j + 1));
-	if (new_cmd == NULL)
-		return (NULL);
+	split_cmd_mallloc(&new_cmd, temp, cmd);
 	i = -1;
 	j = -1;
 	while (temp[++i])
@@ -69,19 +77,6 @@ char	**split_cmd(char **cmd)
 	free(temp);
 	new_cmd[i + j] = NULL;
 	return (new_cmd);
-}
-
-void	free_av(char **av)
-{
-	int	i;
-
-	i = 0;
-	while (av[i])
-	{
-		free(av[i]);
-		i++;
-	}
-	free(av);
 }
 
 int	excu(char **cmd, t_minishell **mnsh)
@@ -98,6 +93,7 @@ int	excu(char **cmd, t_minishell **mnsh)
 		else
 			excu_cmd(cmd, mnsh);
 	}
-	free_av(cmd);
+	// free_av(cmd);
+	free_arr(&cmd);
 	return (exit_code);
 }
