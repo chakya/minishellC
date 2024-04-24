@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/08 09:40:29 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/23 19:46:22 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 15:09:38 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,9 @@
 
 int	is_builtins(char **cmd)
 {
-	if (ft_strcmp(cmd[0], "cd") == 0
-		|| ft_strcmp(cmd[0], "echo") == 0
-		|| ft_strcmp(cmd[0], "env") == 0
-		|| ft_strcmp(cmd[0], "exit") == 0
-		|| ft_strcmp(cmd[0], "export") == 0
-		|| ft_strcmp(cmd[0], "pwd") == 0
+	if (ft_strcmp(cmd[0], "cd") == 0 || ft_strcmp(cmd[0], "echo") == 0
+		|| ft_strcmp(cmd[0], "env") == 0 || ft_strcmp(cmd[0], "exit") == 0
+		|| ft_strcmp(cmd[0], "export") == 0 || ft_strcmp(cmd[0], "pwd") == 0
 		|| ft_strcmp(cmd[0], "unset") == 0)
 		return (1);
 	return (0);
@@ -44,7 +41,7 @@ int	builtins(char **cmd, t_minishell **mnsh)
 	return (0);
 }
 
-char **split_cmd(char **cmd)
+char	**split_cmd(char **cmd)
 {
 	int		i;
 	int		j;
@@ -74,7 +71,6 @@ char **split_cmd(char **cmd)
 	return (new_cmd);
 }
 
-
 void	free_av(char **av)
 {
 	int	i;
@@ -90,7 +86,7 @@ void	free_av(char **av)
 
 int	excu(char **cmd, t_minishell **mnsh)
 {
-	int exit_code;
+	int	exit_code;
 
 	exit_code = 0;
 	if (cmd[0])

@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 20:32:56 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/22 20:38:07 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/23 21:27:45 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	loop_quote(char *c)
 	char	quote;
 
 	quote = *c;
-	(c)++;
+	c++;
 	i = 1;
 	is_closed = 0;
 	while (*c)
@@ -43,7 +43,7 @@ int	loop_quote(char *c)
 			is_closed = 0;
 			quote = *c;
 		}
-		(c)++;
+		c++;
 		if ((ft_isspace(*c) || is_delim(c)) && is_closed)
 			return (i);
 	}

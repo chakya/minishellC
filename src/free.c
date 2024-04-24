@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dphang <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 12:42:00 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/23 12:29:36 by dphang           ###   ########.fr       */
+/*   Updated: 2024/04/24 14:47:44 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	free_all(t_minishell **mnsh)
 	*mnsh = NULL;
 }
 
-void	free_tokens(t_dls *tokens)
+t_dls	*free_tokens(t_dls *tokens)
 {
 	t_dls	*temp;
 
@@ -44,6 +44,7 @@ void	free_tokens(t_dls *tokens)
 		free(temp->content);
 		free(temp);
 	}
+	return (NULL);
 }
 
 void	free_ast(t_ast *ast)

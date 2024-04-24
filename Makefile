@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: dphang <marvin@42.fr>                      +#+  +:+       +#+         #
+#    By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/05 22:26:43 by dphang            #+#    #+#              #
-#    Updated: 2024/04/23 11:43:18 by dphang           ###   ########.fr        #
+#    Updated: 2024/04/24 14:59:21 by cwijaya          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,7 @@ SRCS = \
 		src/parser/parsing.c \
 		src/parser/parser_utils.c \
 		src/parser/token.c \
+		src/parser/token_utils.c \
 		src/parser/exe_token.c \
 		src/parser/ast.c \
 		src/parser/pipe.c \

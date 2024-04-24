@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/03 23:28:45 by dphang            #+#    #+#             */
-/*   Updated: 2024/04/23 19:35:55 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 14:58:35 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ typedef enum s_type
 {
 	T_INVALID = 0,
 	T_EMPTY,
-	T_PIPE,
 	T_CMD,
 	T_ARG,
 	T_COL,
@@ -51,6 +50,7 @@ typedef enum s_type
 	T_CB,
 	T_OR,
 	T_AND,
+	T_PIPE,
 	T_INPUT,
 	T_HEREDOC,
 	T_TRUNC,
@@ -147,7 +147,7 @@ void				eof_handler(t_minishell **mnsh);
 //  =========================   free   ========================================
 void				free_envp(t_envp **envp);
 void				free_all(t_minishell **mnsh);
-void				free_tokens(t_dls *tokens);
+t_dls				*free_tokens(t_dls *tokens);
 void				free_ast(t_ast *ast);
 void				free_arr(char ***arr);
 //  =========================   parsing   =====================================
@@ -174,9 +174,11 @@ void				ft_skipspaces(char **str);
 // token
 t_type				get_ops_type(char *ops);
 t_dls				*tokenize_operation(char **input);
-t_dls				*tokenize_param(char **input, t_minishell **mnsh);
+t_dls				*tokenize_param(char **input, t_minishell **mnsh,
+						t_dls *token);
 // pipe
-t_ast				**populate_children(t_dls *tokens, int count, t_minishell **mnsh);
+t_ast				**populate_children(t_dls *tokens, int count,
+						t_minishell **mnsh);
 void				check_heredoc(t_dls *tokens, t_minishell **mnsh);
 int					count_pipe(t_dls *tokens);
 int					delim_check(char *hline, char *delim);
@@ -184,6 +186,9 @@ int					delim_check(char *hline, char *delim);
 int					execute_tokens(t_dls *tokens, t_minishell **mnsh);
 // parsing
 char				**process_av(t_dls *tokens, t_minishell **mnsh);
+char				**parse_to_arg(t_dls *tokens);
+// token utils
+t_dls				*parse_token(char *input, t_minishell **mnsh);
 char				**parse_to_arg(t_dls *tokens);
 
 #endif
