@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 20:40:17 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/23 17:26:08 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/24 14:34:41 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,23 +72,26 @@ t_dls	*tokenize_operation(char **input)
 	return (token);
 }
 
-t_dls	*tokenize_param(char **input, t_minishell **mnsh)
+t_dls	*tokenize_param(char **input, t_minishell **mnsh, t_dls *prev)
 {
 	t_dls	*token;
 	int		l;
 	char	*str;
 
 	l = 0;
-	while (!is_delim((*input) + l))
+	while ((*input)[l]  && !is_delim((*input) + l))
 	{
 		if ((*input)[l] == '"' || (*input)[l] == '\'')
-			l += loop_quote(*input);
+			l += loop_quote((*input) + l);
 		else
 			l++;
 	}
 	if (l == 0)
 		return (NULL);
-	str = parse_string(ft_strndup(*input, l), mnsh);
+	if (prev && prev->type != T_HEREDOC)
+		str = parse_string(ft_strndup(*input, l), mnsh);
+	else
+		str = ft_strndup(*input, l);
 	token = ft_dlsnew(str, T_ARG);
 	*input += l;
 	return (token);
