@@ -6,7 +6,7 @@
 /*   By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 21:00:17 by cwijaya           #+#    #+#             */
-/*   Updated: 2024/04/23 19:40:26 by cwijaya          ###   ########.fr       */
+/*   Updated: 2024/04/23 20:51:15 by cwijaya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,8 @@ void	check_heredoc(t_dls *tokens, t_minishell **mnsh)
 				while (delim)
 				{
 					hline = readline("> ");
+					if (!hline)
+						break;
 					if (delim_check(hline, delim))
 						break ;
 					parsed = parse_string(hline, mnsh);
