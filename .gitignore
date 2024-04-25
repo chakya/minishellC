@@ -1,3 +1,4 @@
 */*.o
 minishell_tester
 .vscode
+readline.supp
