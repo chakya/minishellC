@@ -95,12 +95,6 @@ typedef struct s_parsestr
 
 extern int			g_sig_received;
 
-t_dls				*parse_token(char *input, t_minishell **mnsh);
-t_dls				*ft_dlsnew(char *content, t_type type);
-void				ft_dlsadd_back(t_dls **lst, t_dls *new);
-int					execute(t_dls *tokens, char **envp);
-t_ast				*parse_ast(t_dls *tokens, t_minishell **mnsh);
-int					execute_ast(t_minishell **mnst, int *opipe);
 //	=========================   built-ins   ===================================
 //	builtins_utils
 int					ft_strcmp(const char *s1, const char *s2);
@@ -127,6 +121,7 @@ int					export(char **cmd, t_minishell **mnsh);
 //	pwd
 int					pwd(void);
 //  unset
+void				rm_envp(t_minishell **mnsh, t_envp **to_rm);
 int					unset(char **cmd, t_minishell **mnsh);
 //  =========================   execution   ===================================
 //  excu
@@ -190,11 +185,17 @@ int					execute_tokens(t_dls *tokens, t_minishell **mnsh);
 // parsing
 char				**process_av(t_dls *tokens);
 char				**parse_to_arg(t_dls *tokens);
+int					execute_ast(t_minishell **mnst, int *opipe);
 // token utils
 t_dls				*parse_token(char *input, t_minishell **mnsh);
 char				**parse_to_arg(t_dls *tokens);
 // redir utils
 void				fork_heredoc(int pid, int fd[2], char *delim,
 						t_minishell **mnsh);
+//	dls
+t_dls				*ft_dlsnew(char *content, t_type type);
+void				ft_dlsadd_back(t_dls **lst, t_dls *new);
+//	ast
+t_ast				*parse_ast(t_dls *tokens, t_minishell **mnsh);
 
 #endif

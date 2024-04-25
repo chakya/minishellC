@@ -15,6 +15,7 @@
 t_dls	*ft_dlsnew(char *content, t_type type)
 {
 	t_dls	*node;
+
 	if (!content)
 		return (NULL);
 	node = malloc(sizeof(t_dls));

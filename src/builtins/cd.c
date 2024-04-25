@@ -43,9 +43,12 @@ void	replace_prewd(t_envp **wd, t_envp **old_wd)
 {
 	char	*new_wd;
 
-	free((*old_wd)->content);
-	(*old_wd)->content = ft_strpathdup("OLDPWD=", (*wd)->content + 5);
-	free((*wd)->content);
+	if (old_wd)
+	{
+		free((*old_wd)->content);
+		(*old_wd)->content = ft_strpathdup("OLDPWD=", (*wd)->content + 4);
+		free((*wd)->content);
+	}
 	new_wd = (char *)malloc(PATH_MAX * sizeof(char));
 	getcwd(new_wd, PATH_MAX);
 	(*wd)->content = ft_strpathdup("PWD=", new_wd);
@@ -71,11 +74,10 @@ void	update_wd(t_minishell **mnsh)
 	}
 	if (wd && old_wd)
 		replace_prewd(&wd, &old_wd);
-	else
-	{
-		ft_putstr_fd("Error: PWD or OLDPWD not found in envp\n", 2);
-		(*mnsh)->exit_code = 1;
-	}
+	else if (wd && !old_wd)
+		replace_prewd(&wd, &old_wd);
+	else if (!wd && old_wd)
+		rm_envp(mnsh, &old_wd);
 }
 
 int	cd(char **cmd, t_minishell **mnsh)
