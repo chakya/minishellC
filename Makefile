@@ -6,13 +6,13 @@
 #    By: cwijaya <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/05 22:26:43 by dphang            #+#    #+#              #
-#    Updated: 2024/04/24 17:05:32 by cwijaya          ###   ########.fr        #
+#    Updated: 2024/04/25 13:28:52 by cwijaya          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror
 LIBFT = lib/libft/libft.a
 SRCS = \
 		src/main.c \
@@ -55,7 +55,7 @@ $(NAME): $(OBJS)
 	@${CC} ${CFLAGS} ${OBJS} ${LIBFT} -lreadline -o ${NAME}
 
 .c.o:
-	@${CC} ${CFLAGS} -c $< -o ${<:.c=.o} -g
+	@${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
 
 clean:
 	@$(RM) $(OBJS)
