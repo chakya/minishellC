@@ -56,10 +56,14 @@ void	exit_child(t_minishell **mnsh, int exit_status)
 		(*mnsh)->exit_code = WEXITSTATUS(exit_status);
 	if (WIFSIGNALED(exit_status))
 	{
-		if (WTERMSIG(exit_status) == SIGINT
-			|| WTERMSIG(exit_status) == SIGQUIT)
+		if (WTERMSIG(exit_status) == SIGINT)
 		{
 			g_sig_received = 1;
+			printf("\n");
+		}
+		else if (WTERMSIG(exit_status) == SIGQUIT)
+		{
+			(*mnsh)->exit_code = 131;
 			printf("\n");
 		}
 	}
